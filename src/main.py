@@ -42,3 +42,8 @@ model = keras.Sequential([
 ])
 
 model.summary()
+
+model.compile(
+    optimizer=keras.optimizers.Adam(),
+    loss=keras.losses.CTC(),
+)
