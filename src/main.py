@@ -3,10 +3,15 @@ import settings
 import tensorflow as tf
 import keras
 from keras import layers
+from dataloader import IAMLineDataloader
 
 input_shape = (32, 256, 1)
 alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
+# DATASETS
+
+
+# MODEL
 model = keras.Sequential([
     layers.Conv2D(filters=32, kernel_size=5, padding="same", input_shape=input_shape),
     layers.BatchNormalization(),
@@ -43,7 +48,10 @@ model = keras.Sequential([
 
 model.summary()
 
+# COMPILE
 model.compile(
     optimizer=keras.optimizers.Adam(),
     loss=keras.losses.CTC(),
 )
+
+# TRAINING
