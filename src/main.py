@@ -9,6 +9,21 @@ input_shape = (32, 256, 1)
 alphabet = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
 # DATASETS
+# Create dataset for IAM
+iam_dataloader = IAMLineDataloader(settings.IAM_PATH)
+(samples, labels) = iam_dataloader.load_samples_tensor()
+dataset = tf.data.Dataset.from_tensor_slices((samples, labels))
+
+# Add characters from dataset to alphabet
+unique_chars = set(alphabet)
+for label in labels:
+    unique_chars.update(label)
+unique_chars = sorted(unique_chars)
+
+# Create lambda char_to_int for CTC using StringLookup
+char_to_int = layers.StringLookup(vocabulary=unique_chars, oov_token="[UNK]")
+int_to_char = layers.StringLookup(vocabulary=unique_chars, oov_token="[UNK]", invert=True)
+
 def preprocess_sample(img_path, label):
     """Opens image and convert image to tensor of floats. Process characters from label to int format for CTC"""
     img = tf.io.read_file(img_path)
@@ -22,22 +37,8 @@ def preprocess_sample(img_path, label):
     label = char_to_int(label)
 
     return img, label
-# Create dataset for IAM
-iam_dataloader = IAMLineDataloader(settings.IAM_PATH)
-(samples, labels) = iam_dataloader.load_samples_tensor()
 
-dataset = tf.data.Dataset.from_tensor_slices((samples, labels))
 dataset.map(preprocess_sample)
-
-# Add characters from dataset to alphabet
-unique_chars = set(alphabet)
-for label in labels:
-    unique_chars.update(label)
-unique_chars = sorted(unique_chars)
-
-# Create lambda char_to_int for CTC using StringLookup
-char_to_int = layers.StringLookup(vocabulary=unique_chars, oov_token="[UNK]")
-int_to_char = layers.StringLookup(vocabulary=unique_chars, oov_token="[UNK]", invert=True)
 
 # Splits
 total = len(dataset)
@@ -93,3 +94,11 @@ model.compile(
 )
 
 # TRAINING
+history = model.fit(
+    x=train_ds,
+    batch_size=250,
+    epochs=3,
+    validation_data=val_ds
+)
+
+print(history.history)
