@@ -9,6 +9,28 @@ input_shape = (32, 256, 1)
 alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
 # DATASETS
+def preprocess_sample(img_path, label):
+    """Opens image and convert image to tensor of floats. Process characters from label to int format for CTC"""
+    img = tf.io.read_file(img_path)
+    img = tf.image.decode_png(img, channels=1)
+    img = tf.image.convert_image_dtype(img, tf.float32)
+
+# Create dataset for IAM
+iam_dataloader = IAMLineDataloader(settings.IAM_PATH)
+(samples, labels) = iam_dataloader.load_samples_tensor()
+dataset = tf.data.Dataset.from_tensor_slices((samples, labels))
+
+# Splits
+total = len(dataset)
+train_split = int(0.95 * total)
+val_split = int(0.04 * total)
+test_split = total - train_split - val_split
+
+train_ds = dataset.take(train_split)
+val_ds = dataset.skip(train_split).take(val_split)
+test_ds = dataset.skip(train_split).skip(val_split)
+
+
 
 
 # MODEL
