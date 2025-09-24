@@ -14,6 +14,7 @@ def preprocess_sample(img_path, label):
     img = tf.io.read_file(img_path)
     img = tf.image.decode_png(img, channels=1)
     img = tf.image.convert_image_dtype(img, tf.float32)
+    img = tf.image.resize(img, (32, 256), preserve_aspect_ratio=True)
 
 # Create dataset for IAM
 iam_dataloader = IAMLineDataloader(settings.IAM_PATH)
