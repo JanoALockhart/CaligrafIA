@@ -6,7 +6,7 @@ from keras import layers
 from dataloader import IAMLineDataloader
 
 input_shape = (32, 256, 1)
-alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+alphabet = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
 # DATASETS
 def preprocess_sample(img_path, label):
@@ -15,11 +15,29 @@ def preprocess_sample(img_path, label):
     img = tf.image.decode_png(img, channels=1)
     img = tf.image.convert_image_dtype(img, tf.float32)
     img = tf.image.resize(img, (32, 256), preserve_aspect_ratio=True)
+    img = img / 255.0
+    img = (img - 0.5) / 0.5
 
+    label = tf.strings.unicode_split(label, input_encoding="UTF-8")
+    label = char_to_int(label)
+
+    return img, label
 # Create dataset for IAM
 iam_dataloader = IAMLineDataloader(settings.IAM_PATH)
 (samples, labels) = iam_dataloader.load_samples_tensor()
+
 dataset = tf.data.Dataset.from_tensor_slices((samples, labels))
+dataset.map(preprocess_sample)
+
+# Add characters from dataset to alphabet
+unique_chars = set(alphabet)
+for label in labels:
+    unique_chars.update(label)
+unique_chars = sorted(unique_chars)
+
+# Create lambda char_to_int for CTC using StringLookup
+char_to_int = layers.StringLookup(vocabulary=unique_chars, oov_token="[UNK]")
+int_to_char = layers.StringLookup(vocabulary=unique_chars, oov_token="[UNK]", invert=True)
 
 # Splits
 total = len(dataset)
@@ -30,9 +48,6 @@ test_split = total - train_split - val_split
 train_ds = dataset.take(train_split)
 val_ds = dataset.skip(train_split).take(val_split)
 test_ds = dataset.skip(train_split).skip(val_split)
-
-
-
 
 # MODEL
 model = keras.Sequential([
@@ -69,7 +84,7 @@ model = keras.Sequential([
     layers.Dense(len(alphabet) + 1, activation=None),
 ])
 
-model.summary()
+# model.summary()
 
 # COMPILE
 model.compile(
