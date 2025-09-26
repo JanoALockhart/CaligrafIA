@@ -2,6 +2,7 @@
 __pycache__/
 *.py[codz]
 *$py.class
+src/tests.py
 
 # C extensions
 *.so
