@@ -7,7 +7,6 @@ from dataloader import IAMLineDataloader
 
 def main():
     input_shape = (32, 256, 1)
-    alphabet = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
     # DATASETS
     # Create dataset for IAM
@@ -16,7 +15,7 @@ def main():
     dataset = tf.data.Dataset.from_tensor_slices((samples, labels))
 
     # Add characters from dataset to alphabet
-    unique_chars = set(alphabet)
+    unique_chars = set()
     max_length = 0
     longest_label = ""
     for label in labels:
@@ -99,7 +98,7 @@ def main():
         
         layers.Bidirectional(layers.LSTM(256, return_sequences=True), merge_mode="concat"),
         layers.Bidirectional(layers.LSTM(256, return_sequences=True), merge_mode="concat"),
-        layers.Dense(len(alphabet) + 1, activation=None),
+        layers.Dense(len(unique_chars) + 1, activation=None),
     ])
 
     model.summary()
