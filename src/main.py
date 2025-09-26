@@ -79,7 +79,7 @@ def main():
         print(label.numpy())
 
     # MODEL
-    model = build_model(input_shape, unique_chars)
+    model = build_model(input_shape, len(unique_chars) + 1)
 
     model.summary()
 
