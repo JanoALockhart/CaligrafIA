@@ -44,7 +44,6 @@ def main():
 
         label = tf.strings.unicode_split(label, input_encoding="UTF-8")
         label = char_to_int(label)
-        label = tf.pad(label, [[0, max_length - tf.shape(label)[0]]])
 
         return img, label
 
@@ -57,17 +56,17 @@ def main():
     train_samples = samples[0:train_split]
     train_labels = labels[0:train_split]
     train_ds = tf.data.Dataset.from_tensor_slices((train_samples, train_labels))
-    train_ds = train_ds.map(preprocess_sample).batch(32)
+    train_ds = train_ds.map(preprocess_sample).padded_batch(32)
 
     val_samples = samples[train_split:train_split+val_split]
     val_labels = labels[train_split:train_split+val_split]
     val_ds = tf.data.Dataset.from_tensor_slices((val_samples, val_labels))
-    val_ds = val_ds.map(preprocess_sample).batch(32)
+    val_ds = val_ds.map(preprocess_sample).padded_batch(32)
 
     test_samples = samples[train_split+val_split:]
     test_labels = labels[train_split+val_split:]
     test_ds = tf.data.Dataset.from_tensor_slices((test_samples, test_labels))
-    test_ds = test_ds.map(preprocess_sample).batch(32)
+    test_ds = test_ds.map(preprocess_sample).padded_batch(32)
 
     for (sample, label) in train_ds.take(1):
         print(sample.numpy().shape)
