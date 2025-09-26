@@ -12,7 +12,6 @@ def main():
     # Create dataset for IAM
     iam_dataloader = IAMLineDataloader(settings.IAM_PATH)
     (samples, labels) = iam_dataloader.load_samples_tensor()
-    dataset = tf.data.Dataset.from_tensor_slices((samples, labels))
 
     # Add characters from dataset to alphabet
     unique_chars = set()
@@ -48,18 +47,27 @@ def main():
         label = tf.pad(label, [[0, max_length - tf.shape(label)[0]]])
 
         return img, label
-    
-    dataset = dataset.map(preprocess_sample).batch(32)
 
     # Splits
-    total = len(dataset)
+    total = len(samples)
     train_split = int(0.95 * total)
     val_split = int(0.04 * total)
     test_split = total - train_split - val_split
 
-    train_ds = dataset.take(train_split)
-    val_ds = dataset.skip(train_split).take(val_split)
-    test_ds = dataset.skip(train_split).skip(val_split)
+    train_samples = samples[0:train_split]
+    train_labels = labels[0:train_split]
+    train_ds = tf.data.Dataset.from_tensor_slices((train_samples, train_labels))
+    train_ds = train_ds.map(preprocess_sample).batch(32)
+
+    val_samples = samples[train_split:train_split+val_split]
+    val_labels = labels[train_split:train_split+val_split]
+    val_ds = tf.data.Dataset.from_tensor_slices((val_samples, val_labels))
+    val_ds = val_ds.map(preprocess_sample).batch(32)
+
+    test_samples = samples[train_split+val_split:]
+    test_labels = labels[train_split+val_split:]
+    test_ds = tf.data.Dataset.from_tensor_slices((test_samples, test_labels))
+    test_ds = test_ds.map(preprocess_sample).batch(32)
 
     for (sample, label) in train_ds.take(1):
         print(sample.numpy().shape)
