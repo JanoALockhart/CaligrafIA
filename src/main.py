@@ -2,6 +2,7 @@ import settings
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import keras
+import numpy as np
 from keras import layers
 from dataloader import IAMLineDataloader
 
@@ -39,8 +40,7 @@ def main():
         img = tf.image.decode_png(img, channels=1)
         img = tf.image.convert_image_dtype(img, tf.float32)
         img = tf.image.resize_with_pad(img, 32, 256)
-        img = img / 255.0
-        img = (img - 0.5) / 0.5
+        img = (img - 0.5) / 0.5 #Normalize
 
         label = tf.strings.unicode_split(label, input_encoding="UTF-8")
         label = char_to_int(label)
@@ -73,6 +73,7 @@ def main():
 
     for (sample, label) in train_ds.take(1):
         print(sample.numpy().shape)
+        print(np.max(sample[0].numpy()), np.min(sample[0].numpy()))
         print(label.numpy())
 
     # MODEL
