@@ -7,9 +7,13 @@ from keras import layers
 from dataloader import IAMLineDataloader
 
 from model import build_model
+from callbacks import ValidationLogCallback
 
 def main():
     input_shape = (32, 256, 1)
+
+    if settings.DEBUG_MODE:
+        print("--- DEBUG MODE ACTIVE ---")
 
     # DATASETS
     # Create dataset for IAM
@@ -31,9 +35,10 @@ def main():
     char_to_int = layers.StringLookup(vocabulary=unique_chars, oov_token="[UNK]")
     int_to_char = layers.StringLookup(vocabulary=unique_chars, oov_token="[UNK]", invert=True)
 
-    print(unique_chars)
-    print(max_length)
-    print(longest_label)
+    if settings.DEBUG_MODE:
+        print(unique_chars)
+        print(max_length)
+        print(longest_label)
 
 
     def preprocess_sample(img_path, label):
@@ -70,25 +75,34 @@ def main():
     test_ds = tf.data.Dataset.from_tensor_slices((test_samples, test_labels))
     test_ds = test_ds.map(preprocess_sample).padded_batch(settings.BATCH_SIZE)
 
-    print("Splits:  ",len(train_samples), len(val_samples), len(test_samples), len(samples))
-    print("Batched: ",len(train_ds), len(val_ds), len(test_ds))
+    if settings.DEBUG_MODE:
+        print("Splits:  ",len(train_samples), len(val_samples), len(test_samples), len(samples))
+        print("Batched: ",len(train_ds), len(val_ds), len(test_ds))
 
-    for (sample, label) in train_ds.take(1):
-        print(sample.numpy().shape)
-        print(np.max(sample[0].numpy()), np.min(sample[0].numpy()))
-        print(label.numpy())
+        for (sample, label) in train_ds.take(1):
+            print(sample.numpy().shape)
+            print(np.max(sample[0].numpy()), np.min(sample[0].numpy()))
+            print(label.numpy())
 
     # MODEL
     model = build_model(input_shape, len(unique_chars) + 1)
 
-    model.summary()
+    if settings.DEBUG_MODE:
+        model.summary()
 
     # COMPILE
     model.compile(optimizer=keras.optimizers.Adam(), loss=keras.losses.CTC())
 
     # TRAINING
-    history = model.fit(x=train_ds, epochs=3, validation_data=val_ds)
-    print(history.history)
+    history = model.fit(
+        x=train_ds, 
+        epochs=3, 
+        validation_data=val_ds,
+        callbacks=[ValidationLogCallback]
+    )
+
+    if settings.DEBUG_MODE:
+        print(history.history)
 
 if __name__ == "__main__":
     main()
