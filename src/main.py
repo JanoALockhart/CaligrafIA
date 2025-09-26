@@ -49,24 +49,27 @@ def main():
 
     # Splits
     total = len(samples)
-    train_split = int(0.95 * total)
-    val_split = int(0.04 * total)
+    train_split = int(settings.TRAIN_SPLIT * total)
+    val_split = int(settings.VAL_SPLIT * total)
     test_split = total - train_split - val_split
 
     train_samples = samples[0:train_split]
     train_labels = labels[0:train_split]
     train_ds = tf.data.Dataset.from_tensor_slices((train_samples, train_labels))
-    train_ds = train_ds.map(preprocess_sample).padded_batch(32)
+    train_ds = train_ds.map(preprocess_sample).padded_batch(settings.BATCH_SIZE)
 
     val_samples = samples[train_split:train_split+val_split]
     val_labels = labels[train_split:train_split+val_split]
     val_ds = tf.data.Dataset.from_tensor_slices((val_samples, val_labels))
-    val_ds = val_ds.map(preprocess_sample).padded_batch(32)
+    val_ds = val_ds.map(preprocess_sample).padded_batch(settings.BATCH_SIZE)
 
     test_samples = samples[train_split+val_split:]
     test_labels = labels[train_split+val_split:]
     test_ds = tf.data.Dataset.from_tensor_slices((test_samples, test_labels))
-    test_ds = test_ds.map(preprocess_sample).padded_batch(32)
+    test_ds = test_ds.map(preprocess_sample).padded_batch(settings.BATCH_SIZE)
+
+    print("Splits:  ",len(train_samples), len(val_samples), len(test_samples), len(samples))
+    print("Batched: ",len(train_ds), len(val_ds), len(test_ds))
 
     for (sample, label) in train_ds.take(1):
         print(sample.numpy().shape)
