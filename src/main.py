@@ -96,9 +96,9 @@ def main():
     # TRAINING
     history = model.fit(
         x=train_ds, 
-        epochs=3, 
+        epochs=1, 
         validation_data=val_ds,
-        callbacks=[ValidationLogCallback]
+        callbacks=[ValidationLogCallback(val_ds, int_to_char)]
     )
 
     if settings.DEBUG_MODE:
