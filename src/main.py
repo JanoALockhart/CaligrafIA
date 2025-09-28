@@ -46,7 +46,11 @@ def main():
         img = tf.io.read_file(img_path)
         img = tf.image.decode_png(img, channels=1)
         img = tf.image.convert_image_dtype(img, tf.float32)
+        
+        img = 1.0 - img
         img = tf.image.resize_with_pad(img, 32, 256)
+        img = 1.0 - img
+        
         img = (img - 0.5) / 0.5 #Normalize
 
         label = tf.strings.unicode_split(label, input_encoding="UTF-8")
