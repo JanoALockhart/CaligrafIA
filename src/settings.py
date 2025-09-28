@@ -13,3 +13,5 @@ EPOCHS = int(os.getenv("EPOCHS")) if not DEBUG_MODE else int(os.getenv("DEBUG_EP
 BATCH_SIZE = int(os.getenv("BATCH_SIZE")) if not DEBUG_MODE else int(os.getenv("DEBUG_BATCH_SIZE"))
 TRAIN_SPLIT = float(os.getenv("TRAIN_SPLIT")) if not DEBUG_MODE else float(os.getenv("DEBUG_TRAIN_SPLIT"))
 VAL_SPLIT = float(os.getenv("VAL_SPLIT")) if not DEBUG_MODE else float(os.getenv("DEBUG_VAL_SPLIT"))
+
+TEST_IMG_PATH = os.getenv("TEST_IMG_PATH")
