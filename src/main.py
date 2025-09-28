@@ -87,6 +87,9 @@ def main():
             print(sample.numpy().shape)
             print(np.max(sample[0].numpy()), np.min(sample[0].numpy()))
             print(label.numpy())
+            plt.imshow(sample[0])
+            plt.title(tf.strings.reduce_join(int_to_char(label[0])).numpy().decode("UTF-8"))
+            plt.show()
 
     # MODEL
     model = build_model(input_shape, len(unique_chars) + 1)
