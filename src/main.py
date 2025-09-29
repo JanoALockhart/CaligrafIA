@@ -1,3 +1,4 @@
+from metrics import CharacterErrorRate
 import settings
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -87,9 +88,9 @@ def main():
             print(sample.numpy().shape)
             print(np.max(sample[0].numpy()), np.min(sample[0].numpy()))
             print(label.numpy())
-            plt.imshow(sample[0])
-            plt.title(tf.strings.reduce_join(int_to_char(label[0])).numpy().decode("UTF-8"))
-            plt.show()
+            #plt.imshow(sample[0])
+            #plt.title(tf.strings.reduce_join(int_to_char(label[0])).numpy().decode("UTF-8"))
+            #plt.show()
 
     # MODEL
     model = build_model(input_shape, len(unique_chars) + 1)
@@ -98,14 +99,20 @@ def main():
         model.summary()
 
     # COMPILE
-    model.compile(optimizer=keras.optimizers.Adam(), loss=keras.losses.CTC())
+    model.compile(
+        optimizer=keras.optimizers.Adam(), 
+        loss=keras.losses.CTC(),
+        metrics=[CharacterErrorRate(int_to_char)],
+        run_eagerly=settings.EAGER_EXECUTION
+    )
 
     # TRAINING
     history = model.fit(
         x=train_ds, 
         epochs=settings.EPOCHS, 
         validation_data=val_ds,
-        callbacks=[ValidationLogCallback(val_ds, int_to_char)]
+        callbacks=[ValidationLogCallback(val_ds, int_to_char)],
+        
     )
 
     if settings.DEBUG_MODE:
