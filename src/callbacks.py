@@ -2,7 +2,7 @@ import tensorflow as tf
 import keras
 import numpy as np
 import settings
-from metrics import edit_distance_rate
+import editdistance
 
 class ValidationLogCallback(keras.callbacks.Callback):
     def __init__(self, val_ds, int_to_char):
@@ -56,12 +56,15 @@ class ValidationLogCallback(keras.callbacks.Callback):
         for pred_text, true_text in zip(batch_predicted_text, batch_true_text):
             pred_text = pred_text.replace("[UNK]","")
             true_text = true_text.replace("[UNK]","")
-            cer = edit_distance_rate(pred_text, true_text)
-            wer = edit_distance_rate(pred_text.split(" "), true_text.split(" "))
+            cer = self._edit_distance_rate(pred_text, true_text)
+            wer = self._edit_distance_rate(pred_text.split(" "), true_text.split(" "))
 
             print(f"True      : {true_text}")
             print(f"Predicted : {pred_text}")
             print(f"CER       : {cer * 100: .2f}%")
             print(f"WER       : {wer * 100: .2f}%")
             print("-" * 100)
+
+    def _edit_distance_rate(self, pred, true):
+        return editdistance.eval(pred, true)/len(true)
         
