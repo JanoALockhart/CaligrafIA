@@ -21,7 +21,7 @@ class ValidationLogCallback(keras.callbacks.Callback):
             batch_true_text = self._decode_labels(y)
             self._show_predicted_vs_true(batch_predicted_text, batch_true_text)
 
-        
+    # TODO: Use tf operations (work with tensors). Copy CER. Check for bug, every val prediction is returning nothing
     def _decode_logits(self, logits):
         batch_predicted_texts = []
         input_len = np.ones(logits.shape[0]) * logits.shape[1]

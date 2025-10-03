@@ -40,10 +40,6 @@ class CharacterErrorRate(keras.metrics.Metric):
         self.editdistance.assign_add(errors)
         self.total_chars.assign_add(length)
             
-            
-
-        
-
     def result(self):        
         return tf.math.divide_no_nan(self.total_chars, self.editdistance)
 
@@ -51,3 +47,4 @@ class CharacterErrorRate(keras.metrics.Metric):
         self.editdistance.assign(0.0)
         self.total_chars.assign(0.0)
 
+# TODO: Implement WER and Phrase Acc

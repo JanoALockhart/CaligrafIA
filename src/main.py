@@ -99,6 +99,7 @@ def main():
         model.summary()
 
     # COMPILE
+    # TODO: Implement CTC loss manually
     model.compile(
         optimizer=keras.optimizers.Adam(), 
         loss=keras.losses.CTC(),
