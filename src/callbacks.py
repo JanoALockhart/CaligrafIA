@@ -16,7 +16,7 @@ class ValidationLogCallback(keras.callbacks.Callback):
 
         for batch in self.val_ds:
             x, y = batch
-            logits = self.model(x)
+            logits = self.model(x, training=False)
             batch_predicted_text = self._decode_logits(logits)
             batch_true_text = self._decode_labels(y)
             self._show_predicted_vs_true(batch_predicted_text, batch_true_text)
