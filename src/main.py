@@ -1,4 +1,4 @@
-from metrics import CharacterErrorRate
+from metrics import CharacterErrorRate, WordErrorRate
 import settings
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -102,7 +102,7 @@ def main():
     model.compile(
         optimizer=keras.optimizers.Adam(), 
         loss=keras.losses.CTC(),
-        metrics=[CharacterErrorRate(int_to_char)],
+        metrics=[CharacterErrorRate(int_to_char), WordErrorRate(int_to_char)],
         run_eagerly=settings.EAGER_EXECUTION
     )
 
