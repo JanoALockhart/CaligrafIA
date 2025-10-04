@@ -37,9 +37,8 @@ def main():
     int_to_char = layers.StringLookup(vocabulary=unique_chars, oov_token="[UNK]", invert=True)
 
     if settings.DEBUG_MODE:
-        print(unique_chars)
-        print(max_length)
-        print(longest_label)
+        print("Char classes:", char_to_int.get_vocabulary())
+        print(f"Longest phrase: {longest_label}. Len: {max_length}")
 
 
     def preprocess_sample(img_path, label):
@@ -85,9 +84,9 @@ def main():
         print("Batched: ",len(train_ds), len(val_ds), len(test_ds))
 
         for (sample, label) in train_ds.take(1):
-            print(sample.numpy().shape)
-            print(np.max(sample[0].numpy()), np.min(sample[0].numpy()))
-            print(label.numpy())
+            print("DS sample shape: ", sample.numpy().shape)
+            print("Max, min values in sample: ", np.max(sample[0].numpy()), np.min(sample[0].numpy()))
+            print("y_true: ", label.numpy())
             #plt.imshow(sample[0])
             #plt.title(tf.strings.reduce_join(int_to_char(label[0])).numpy().decode("UTF-8"))
             #plt.show()
