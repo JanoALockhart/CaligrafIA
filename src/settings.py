@@ -17,3 +17,6 @@ VAL_SPLIT = float(os.getenv("VAL_SPLIT")) if not DEBUG_MODE else float(os.getenv
 EAGER_EXECUTION = False if not DEBUG_MODE else bool(os.getenv("EAGER_EXECUTION"))
 
 TEST_IMG_PATH = os.getenv("TEST_IMG_PATH")
+
+HISTORY_PATH = os.getenv("HISTORY_PATH")
+CHECKPOINT_PATH = os.getenv("CHECKPOINT_PATH")
