@@ -10,7 +10,7 @@ from keras import layers
 from dataloader import IAMLineDataloader
 
 from model import build_model
-from callbacks import ValidationLogCallback, MetricsHistoryLogger
+from callbacks import ValidationLogCallback
 
 def main():
     input_shape = (32, 256, 1)
@@ -121,6 +121,7 @@ def main():
         validation_data=val_ds,
         callbacks=[
             ValidationLogCallback(val_ds, int_to_char),
+            keras.callbacks.CSVLogger(settings.HISTORY_PATH, append=True),
             keras.callbacks.ModelCheckpoint(
                 filepath=settings.CHECKPOINT_PATH,
                 monitor="val_CER",
@@ -130,9 +131,6 @@ def main():
             ),
         ],
     )
-
-    with open(settings.HISTORY_PATH, "w") as file:
-        json.dump(history.history, file, indent=4)
 
 if __name__ == "__main__":
     main()
