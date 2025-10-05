@@ -22,7 +22,9 @@ class ValidationLogCallback(keras.callbacks.Callback):
         sparse_true_batch = ragged_true_batch.to_sparse()
         sparse_true_batch = self.int_to_char(sparse_true_batch)
 
-        y_pred_len = tf.fill(tf.shape(y_pred_batch)[0], tf.shape(y_pred_batch)[1])
+        batch_size = tf.shape(y_pred_batch)[0]
+        timesteps = tf.shape(y_pred_batch)[1]
+        y_pred_len = timesteps * tf.ones(batch_size, dtype="int32")
         top_paths, probabilities = keras.ops.ctc_decode(y_pred_batch, sequence_lengths=y_pred_len, strategy="greedy")
         y_pred_ctc_decoded = top_paths[0]
         ragged_pred_batch = tf.RaggedTensor.from_tensor(y_pred_ctc_decoded, padding=-1)
