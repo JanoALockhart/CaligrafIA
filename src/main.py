@@ -1,3 +1,4 @@
+import json
 from metrics import CharacterErrorRate, WordErrorRate
 import settings
 import matplotlib.pyplot as plt
@@ -98,10 +99,9 @@ def main():
         model.summary()
 
     # COMPILE
-    # TODO: Implement CTC loss manually
     model.compile(
         optimizer=keras.optimizers.Adam(), 
-        loss=keras.losses.CTC(),
+        loss= keras.losses.CTC(),
         metrics=[CharacterErrorRate(int_to_char), WordErrorRate(int_to_char)],
         run_eagerly=settings.EAGER_EXECUTION
     )
@@ -111,12 +111,20 @@ def main():
         x=train_ds, 
         epochs=settings.EPOCHS, 
         validation_data=val_ds,
-        callbacks=[ValidationLogCallback(val_ds, int_to_char)],
-        
+        callbacks=[
+            ValidationLogCallback(val_ds, int_to_char),
+            keras.callbacks.ModelCheckpoint(
+                filepath=settings.CHECKPOINT_PATH,
+                monitor="val_CER",
+                verbose=1,
+                save_best_only=True,
+                mode="min"
+            ),
+        ],
     )
 
-    if settings.DEBUG_MODE:
-        print(history.history)
+    with open(settings.HISTORY_PATH, "w") as file:
+        json.dump(history.history, file, indent=4)
 
 if __name__ == "__main__":
     main()
