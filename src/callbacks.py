@@ -71,6 +71,5 @@ class ValidationLogCallback(keras.callbacks.Callback):
     def _get_sparse_strings(self, sparse_chars):
         strings = self._get_text(sparse_chars)
         strings = tf.strings.split(strings).to_sparse()
-        print("CALLBACK Sparse strings:", strings.values)
 
         return strings
