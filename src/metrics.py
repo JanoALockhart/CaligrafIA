@@ -13,7 +13,7 @@ class CharacterErrorRate(keras.metrics.Metric):
         ragged_true_batch = tf.RaggedTensor.from_tensor(y_true_batch, padding=0)
         sparse_true_batch = ragged_true_batch.to_sparse()
         sparse_true_batch = self.int_to_char(sparse_true_batch)
-        
+        # TODO: Learn why ctc_decode only decodes the first batch and not the following as well
         timesteps = tf.shape(y_pred_batch)[1]
         batch_size = tf.shape(y_pred_batch)[0]
         y_pred_len = timesteps * tf.ones(batch_size, dtype="int32")
@@ -29,10 +29,9 @@ class CharacterErrorRate(keras.metrics.Metric):
         length = tf.math.reduce_sum(length)
 
         if settings.DEBUG_MODE:
-            print("CER true: ", y_true_batch.shape)
+            print("CER true shape: ", y_true_batch.shape)
             print("CER pred shape: ", y_pred_batch.shape)
-            print("CER true example: ", y_true_batch[0])
-            print("CER Logits pred: ", y_pred_ctc_decoded)
+            print("CER ctc decoded: ", y_pred_ctc_decoded)
             print("CER sparse true values: ", sparse_true_batch.values)
             print("CER sparse pred values", sparse_pred_batch.values)
             print("CER errors", errors)
@@ -43,7 +42,7 @@ class CharacterErrorRate(keras.metrics.Metric):
         self.total_chars.assign_add(length)
             
     def result(self):        
-        return tf.math.divide_no_nan(self.total_chars, self.editdistance)
+        return tf.math.divide_no_nan(self.editdistance, self.total_chars)
 
     def reset_state(self):
         self.editdistance.assign(0.0)
@@ -79,16 +78,21 @@ class WordErrorRate(keras.metrics.Metric):
         length = tf.math.reduce_sum(length)
 
         if settings.DEBUG_MODE:
-            print("WER true string sparse: ", sparse_string_true_batch.values)
-            print("WER pred string sparse: ", sparse_string_pred_batch.values)
-            print("WER errors", errors)
-            print("WER length", length)
+            print("WER true shape: ", y_true_batch.shape)
+            #print("WER pred shape: ", y_pred_batch.shape)
+            #print("WER y_pred_batch[0]: ", y_pred_batch[0])
+            #print("WER logits max: ", tf.reduce_max(y_pred_batch[0], axis=1))
+            #print("WER ctc decoded: ", y_pred_ctc_decoded)
+            #print("WER true string sparse: ", sparse_string_true_batch.values)
+            #print("WER pred string sparse: ", sparse_string_pred_batch.values)
+            #print("WER errors", errors)
+            #print("WER length", length)
 
         self.editdistance.assign_add(errors)
         self.total_words.assign_add(length)
 
     def result(self):        
-        return tf.math.divide_no_nan(self.total_words, self.editdistance)
+        return tf.math.divide_no_nan(self.editdistance, self.total_words)
 
     def reset_state(self):
         self.editdistance.assign(0.0)
