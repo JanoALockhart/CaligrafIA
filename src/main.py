@@ -1,5 +1,5 @@
-import json
 import logging
+from pathlib import Path
 from metrics import CharacterErrorRate, WordErrorRate
 import settings
 import matplotlib.pyplot as plt
@@ -15,12 +15,19 @@ from callbacks import ValidationLogCallback
 def main():
     input_shape = (32, 256, 1)
 
+    log_path = Path(str(settings.VALIDATION_LOG_PATH))
+    print(log_path)
+    if not log_path.exists():
+        log_path.touch()
+
     logging.basicConfig(
         level=logging.INFO,
         filename=settings.VALIDATION_LOG_PATH,
         format="%(asctime)s %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+    
+    logger = logging.getLogger()
 
     if settings.DEBUG_MODE:
         print("--- DEBUG MODE ACTIVE ---")
@@ -120,7 +127,7 @@ def main():
         epochs=settings.EPOCHS, 
         validation_data=val_ds,
         callbacks=[
-            ValidationLogCallback(val_ds, int_to_char),
+            ValidationLogCallback(val_ds, int_to_char, logger),
             keras.callbacks.CSVLogger(settings.HISTORY_PATH, append=True),
             keras.callbacks.ModelCheckpoint(
                 filepath=settings.CHECKPOINT_PATH,

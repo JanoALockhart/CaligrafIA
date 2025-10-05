@@ -5,12 +5,18 @@ import settings
 import logging
 
 class ValidationLogCallback(keras.callbacks.Callback):
-    def __init__(self, val_ds, int_to_char):
+    def __init__(self, val_ds, int_to_char, logger):
         super().__init__()
         self.val_ds = val_ds
         self.int_to_char = int_to_char
+        self.logger = logger
 
     def on_epoch_end(self, epoch: int, logs=None):
+        self.logger.info("=" * 100)
+        self.logger.info(f"VALIDATION OF EPOCH {epoch}")
+        self.logger.info("=" * 100)
+        
+        
         for batch in self.val_ds:
             x, y = batch
             logits = self.model(x, training=False)
@@ -52,13 +58,13 @@ class ValidationLogCallback(keras.callbacks.Callback):
         pred_text_batch = self._get_text(sparse_pred_batch)
         cers = tf.edit_distance(sparse_pred_batch, sparse_true_batch, normalize=True)
         wers = self._calculate_wer(sparse_true_batch, sparse_pred_batch)
-        
+
         for true_text, pred_text, cer, wer in zip(true_text_batch, pred_text_batch, cers, wers):
-            logging.info(f"True      : {true_text}")
-            logging.info(f"Predicted : {pred_text}")
-            logging.info(f"CER       : {cer * 100: .2f}%")
-            logging.info(f"WER       : {wer * 100: .2f}%")
-            logging.info("-" * 100)
+            self.logger.info(f"True      : {true_text}")
+            self.logger.info(f"Predicted : {pred_text}")
+            self.logger.info(f"CER       : {cer * 100: .2f}%")
+            self.logger.info(f"WER       : {wer * 100: .2f}%")
+            self.logger.info("-" * 100)
 
     def _calculate_wer(self, sparse_true_batch, sparse_pred_batch):
         true_strings = self._get_sparse_strings(sparse_true_batch)
