@@ -2,7 +2,7 @@ import tensorflow as tf
 import keras
 import numpy as np
 import settings
-import editdistance
+import logging
 
 class ValidationLogCallback(keras.callbacks.Callback):
     def __init__(self, val_ds, int_to_char):
@@ -54,11 +54,11 @@ class ValidationLogCallback(keras.callbacks.Callback):
         wers = self._calculate_wer(sparse_true_batch, sparse_pred_batch)
         
         for true_text, pred_text, cer, wer in zip(true_text_batch, pred_text_batch, cers, wers):
-            print(f"True      : {true_text}")
-            print(f"Predicted : {pred_text}")
-            print(f"CER       : {cer * 100: .2f}%")
-            print(f"WER       : {wer * 100: .2f}%")
-            print("-" * 100)
+            logging.info(f"True      : {true_text}")
+            logging.info(f"Predicted : {pred_text}")
+            logging.info(f"CER       : {cer * 100: .2f}%")
+            logging.info(f"WER       : {wer * 100: .2f}%")
+            logging.info("-" * 100)
 
     def _calculate_wer(self, sparse_true_batch, sparse_pred_batch):
         true_strings = self._get_sparse_strings(sparse_true_batch)

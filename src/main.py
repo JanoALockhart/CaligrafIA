@@ -1,4 +1,5 @@
 import json
+import logging
 from metrics import CharacterErrorRate, WordErrorRate
 import settings
 import matplotlib.pyplot as plt
@@ -9,10 +10,17 @@ from keras import layers
 from dataloader import IAMLineDataloader
 
 from model import build_model
-from callbacks import ValidationLogCallback
+from callbacks import ValidationLogCallback, MetricsHistoryLogger
 
 def main():
     input_shape = (32, 256, 1)
+
+    logging.basicConfig(
+        level=logging.INFO,
+        filename=settings.VALIDATION_LOG_PATH,
+        format="%(asctime)s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
     if settings.DEBUG_MODE:
         print("--- DEBUG MODE ACTIVE ---")
