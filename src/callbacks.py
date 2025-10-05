@@ -53,13 +53,13 @@ class ValidationLogCallback(keras.callbacks.Callback):
         return text
 
     # TODO: Use tf operations (work with tensors). Copy CER. Check for bug, every val prediction is returning nothing
-    def _show_predicted_vs_true(self, sparse_true_batch, sparse_pred_batch):
+    def _show_predicted_vs_true(self, sparse_true_batch, sparse_pred_batch, max_to_show=2):
         true_text_batch = self._get_text(sparse_true_batch)
         pred_text_batch = self._get_text(sparse_pred_batch)
         cers = tf.edit_distance(sparse_pred_batch, sparse_true_batch, normalize=True)
         wers = self._calculate_wer(sparse_true_batch, sparse_pred_batch)
 
-        for true_text, pred_text, cer, wer in zip(true_text_batch, pred_text_batch, cers, wers):
+        for true_text, pred_text, cer, wer in zip(true_text_batch[:max_to_show], pred_text_batch[:max_to_show], cers[:max_to_show], wers[:max_to_show]):
             self.logger.info(f"True      : {true_text}")
             self.logger.info(f"Predicted : {pred_text}")
             self.logger.info(f"CER       : {cer * 100: .2f}%")
