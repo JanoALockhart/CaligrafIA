@@ -3,7 +3,8 @@ __pycache__/
 *.py[codz]
 *$py.class
 src/tests.py
-model/
+model/*
+!model/DELETE.me
 
 # C extensions
 *.so
