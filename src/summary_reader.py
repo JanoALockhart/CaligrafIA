@@ -4,8 +4,6 @@ import settings
 
 def main():
     history = pd.read_csv(settings.HISTORY_PATH)
-    print(history)
-    print(len(history.columns)//2)
     
     for metric_idx in range(1, len(history.columns)//2 + 1):
         plot_metric(history, metric_idx)
