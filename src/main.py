@@ -122,20 +122,23 @@ def main():
     )
 
     # TRAINING
-    history = model.fit(
-        x=train_ds, 
-        epochs=settings.EPOCHS, 
-        validation_data=val_ds,
-        callbacks=[
-            ValidationLogCallback(val_ds, int_to_char, logger),
-            keras.callbacks.CSVLogger(settings.HISTORY_PATH, append=True),
-            keras.callbacks.ModelCheckpoint(
+    val_log_callback = ValidationLogCallback(val_ds, int_to_char, logger)
+    metrics_log_callback = keras.callbacks.CSVLogger(settings.HISTORY_PATH, append=True)
+    model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
                 filepath=settings.CHECKPOINT_PATH,
                 monitor="val_CER",
                 verbose=1,
                 save_best_only=True,
                 mode="min"
-            ),
+            )
+    history = model.fit(
+        x=train_ds, 
+        epochs=settings.EPOCHS, 
+        validation_data=val_ds,
+        callbacks=[
+            val_log_callback,
+            metrics_log_callback,
+            model_checkpoint_callback,
         ],
     )
 
