@@ -116,8 +116,16 @@ def main():
         print("Trained model found. Loading model...")
         model = keras.models.load_model(
             filepath=settings.LAST_CHECKPOINT_PATH,
-            custom_objects={'CER':CharacterErrorRate, 'WER':WordErrorRate}
+            compile=False
         )
+
+    #COMPILE
+    model.compile(
+        optimizer=keras.optimizers.Adam(), 
+        loss= keras.losses.CTC(),
+        metrics=[CharacterErrorRate(int_to_char), WordErrorRate(int_to_char)],
+        run_eagerly=settings.EAGER_EXECUTION
+    )
     
     if settings.DEBUG_MODE:
         model.summary()
