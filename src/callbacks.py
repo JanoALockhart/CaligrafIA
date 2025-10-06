@@ -5,17 +5,19 @@ import settings
 import logging
 
 class ValidationLogCallback(keras.callbacks.Callback):
-    def __init__(self, val_ds, int_to_char, logger):
+    def __init__(self, val_ds, int_to_char, logger, first_img_path=None):
         super().__init__()
         self.val_ds = val_ds
         self.int_to_char = int_to_char
         self.logger = logger
+        self.first_img_path = first_img_path
 
     def on_epoch_end(self, epoch: int, logs=None):
         self.logger.info("=" * 100)
         self.logger.info(f"VALIDATION OF EPOCH {epoch}")
         self.logger.info("=" * 100)
-        
+        if self.first_img_path:
+            self.logger.info(f"First img path: {self.first_img_path}")
         
         for batch in self.val_ds:
             x, y = batch

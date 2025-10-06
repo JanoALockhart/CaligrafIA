@@ -122,15 +122,19 @@ def main():
     )
 
     # TRAINING
-    val_log_callback = ValidationLogCallback(val_ds, int_to_char, logger)
+    val_log_callback = ValidationLogCallback(val_ds, int_to_char, logger, val_samples[0])
     metrics_log_callback = keras.callbacks.CSVLogger(settings.HISTORY_PATH, append=True)
     model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
-                filepath=settings.CHECKPOINT_PATH,
-                monitor="val_CER",
-                verbose=1,
-                save_best_only=True,
-                mode="min"
-            )
+        filepath=settings.BEST_CHECKPOINT_PATH,
+        monitor="val_CER",
+        verbose=1,
+        save_best_only=True,
+        mode="min"
+    )
+    latest_checkpoint_callback = keras.callbacks.ModelCheckpoint(
+        filepath=settings.LAST_CHECKPOINT_PATH,
+    )
+
     history = model.fit(
         x=train_ds, 
         epochs=settings.EPOCHS, 
@@ -139,6 +143,7 @@ def main():
             val_log_callback,
             metrics_log_callback,
             model_checkpoint_callback,
+            latest_checkpoint_callback,
         ],
     )
 
