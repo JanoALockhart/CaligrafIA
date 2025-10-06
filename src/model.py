@@ -2,8 +2,11 @@
 import keras
 from keras import layers
 
-def build_model(input_shape, alphabet_length):
-    return keras.Sequential([
+from metrics import CharacterErrorRate, WordErrorRate
+import settings
+
+def build_model(input_shape, alphabet_length, int_to_char):
+    model = keras.Sequential([
         keras.Input(shape=(input_shape)),
         layers.Conv2D(filters=32, kernel_size=5, padding="same"),
         layers.BatchNormalization(),
@@ -37,4 +40,13 @@ def build_model(input_shape, alphabet_length):
         layers.Bidirectional(layers.LSTM(256, return_sequences=True), merge_mode="concat"),
         layers.Dense(alphabet_length, activation=None),
     ])
+
+    model.compile(
+        optimizer=keras.optimizers.Adam(), 
+        loss= keras.losses.CTC(),
+        metrics=[CharacterErrorRate(int_to_char), WordErrorRate(int_to_char)],
+        run_eagerly=settings.EAGER_EXECUTION
+    )
+
+    return model
     
