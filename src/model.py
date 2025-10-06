@@ -2,10 +2,7 @@
 import keras
 from keras import layers
 
-from metrics import CharacterErrorRate, WordErrorRate
-import settings
-
-def build_model(input_shape, alphabet_length, int_to_char):
+def build_model(input_shape, alphabet_length):
     model = keras.Sequential([
         keras.Input(shape=(input_shape)),
         layers.Conv2D(filters=32, kernel_size=5, padding="same"),
