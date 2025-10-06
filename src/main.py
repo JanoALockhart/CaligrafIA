@@ -108,18 +108,19 @@ def main():
             #plt.show()
 
     # MODEL
-    model = build_model(input_shape, len(unique_chars) + 1)
-
+    latest_model_path = Path(str(settings.LAST_CHECKPOINT_PATH))
+    if not latest_model_path.exists():
+        print("Trained model not found. Creating new model...")
+        model = build_model(input_shape, len(unique_chars) + 1)
+    else:
+        print("Trained model found. Loading model...")
+        model = keras.models.load_model(
+            filepath=settings.LAST_CHECKPOINT_PATH,
+            custom_objects={'CER':CharacterErrorRate, 'WER':WordErrorRate}
+        )
+    
     if settings.DEBUG_MODE:
         model.summary()
-
-    # COMPILE
-    model.compile(
-        optimizer=keras.optimizers.Adam(), 
-        loss= keras.losses.CTC(),
-        metrics=[CharacterErrorRate(int_to_char), WordErrorRate(int_to_char)],
-        run_eagerly=settings.EAGER_EXECUTION
-    )
 
     # TRAINING
     val_log_callback = ValidationLogCallback(val_ds, int_to_char, logger, val_samples[0])
@@ -133,6 +134,7 @@ def main():
     )
     latest_checkpoint_callback = keras.callbacks.ModelCheckpoint(
         filepath=settings.LAST_CHECKPOINT_PATH,
+        save_best_only=False
     )
 
     history = model.fit(
