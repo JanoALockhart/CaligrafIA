@@ -83,7 +83,7 @@ def main():
     train_samples = samples[0:train_split]
     train_labels = labels[0:train_split]
     train_ds = tf.data.Dataset.from_tensor_slices((train_samples, train_labels))
-    train_ds = train_ds.map(preprocess_sample).padded_batch(settings.BATCH_SIZE, drop_remainder=True).shuffle(buffer_size=train_ds.cardinality())
+    train_ds = train_ds.map(preprocess_sample).padded_batch(settings.BATCH_SIZE, drop_remainder=True).shuffle(buffer_size=settings.BATCH_SIZE)
 
     val_samples = samples[train_split:train_split+val_split]
     val_labels = labels[train_split:train_split+val_split]
