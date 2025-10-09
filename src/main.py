@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+import data_augmentation
 from metrics import CharacterErrorRate, WordErrorRate
 import settings
 import matplotlib.pyplot as plt
@@ -11,6 +12,7 @@ from dataloader import IAMLineDataloader
 
 from model import build_model
 from callbacks import ValidationLogCallback
+from data_augmentation import apply_augmentations
 
 def main():
     input_shape = (32, 256, 1)
@@ -74,6 +76,23 @@ def main():
 
         return img, label
 
+    def tf_augment(image, label):
+        if settings.DEBUG_MODE:
+            print("Image before aug: ", image)
+            print("Dims before aug:", tf.rank(image))
+            print("Shape before aug", image.shape)
+            print("Shape label before: ", label.shape)
+        img_shape = image.shape
+        image = apply_augmentations(image)
+        image.set_shape(img_shape)
+        if settings.DEBUG_MODE:
+            print("Image after aug: ", image)
+            print("Dims after aug:", tf.rank(image))
+            print("Shape after aug", image.shape)
+            print("Shape label after: ", label.shape)
+
+        return image, label
+
     # Splits
     total = len(samples)
     train_split = int(settings.TRAIN_SPLIT * total)
@@ -83,8 +102,8 @@ def main():
     train_samples = samples[0:train_split]
     train_labels = labels[0:train_split]
     train_ds = tf.data.Dataset.from_tensor_slices((train_samples, train_labels))
-    train_ds = train_ds.map(preprocess_sample).padded_batch(settings.BATCH_SIZE, drop_remainder=True).shuffle(buffer_size=settings.BATCH_SIZE)
-
+    train_ds = train_ds.map(preprocess_sample).map(tf_augment).shuffle(buffer_size=settings.BATCH_SIZE).padded_batch(settings.BATCH_SIZE, drop_remainder=True)
+    #TODO: rank 3 vs 2 tf_augment
     val_samples = samples[train_split:train_split+val_split]
     val_labels = labels[train_split:train_split+val_split]
     val_ds = tf.data.Dataset.from_tensor_slices((val_samples, val_labels))
@@ -98,6 +117,7 @@ def main():
     if settings.DEBUG_MODE:
         print("Splits:  ",len(train_samples), len(val_samples), len(test_samples), len(samples))
         print("Batched: ",len(train_ds), len(val_ds), len(test_ds))
+        print("Train ds: ", train_ds.element_spec)
 
         for (sample, label) in train_ds.take(1):
             print("DS sample shape: ", sample.numpy().shape)
