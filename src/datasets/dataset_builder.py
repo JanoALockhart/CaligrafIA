@@ -14,3 +14,7 @@ class DatasetBuilder(ABC):
     @abstractmethod
     def get_test_set(self):
         pass
+
+    @abstractmethod
+    def get_vocabulary(self):
+        pass
