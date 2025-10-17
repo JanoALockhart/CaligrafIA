@@ -1,18 +1,16 @@
 import logging
 from pathlib import Path
-import data_augmentation
+from datasets.dataset_broker import DatasetBrokerImpl
+from datasets.iam.iam_dataset_builder import IAMDatasetBuilder
 from metrics import CharacterErrorRate, WordErrorRate
 import settings
 import matplotlib.pyplot as plt
-import tensorflow as tf
 import keras
 import numpy as np
-from keras import layers
 from datasets.iam.iam_dataloader import IAMLineDataloader
 
 from model import build_model
 from callbacks import ValidationLogCallback
-from data_augmentation import apply_augmentations
 
 def main():
     input_shape = (32, 256, 1)
@@ -25,88 +23,27 @@ def main():
     # DATASETS
     # Create dataset for IAM
     # TODO: Use Broker class
-    iam_dataloader = IAMLineDataloader(settings.IAM_PATH)
-    (samples, labels) = iam_dataloader.load_samples_tensor()
+    iam_loader = IAMLineDataloader(settings.IAM_PATH)
+    iam_builder = IAMDatasetBuilder(iam_loader)
 
-    # Add characters from dataset to alphabet
-    unique_chars = set()
-    max_length = 0
-    longest_label = ""
-    for label in labels:
-        unique_chars.update(label)
-        if max_length < len(label):
-            max_length = len(label)
-            longest_label = label
-    unique_chars = sorted(unique_chars)
-    
-    # Create lambda char_to_int for CTC using StringLookup
-    char_to_int = layers.StringLookup(vocabulary=unique_chars, oov_token="[UNK]")
-    int_to_char = layers.StringLookup(vocabulary=unique_chars, oov_token="[UNK]", invert=True)
+    broker = DatasetBrokerImpl(
+        train_split_per=settings.TRAIN_SPLIT,
+        val_split_per=settings.VAL_SPLIT,
+        img_height=input_shape[0],
+        img_width=input_shape[1],
+        batch_size=settings.BATCH_SIZE,
+    )
+
+    broker.register_dataset_builder(iam_builder)
+    broker.sample_datasets()
 
     if settings.DEBUG_MODE:
-        print("Char classes:", char_to_int.get_vocabulary())
-        print(f"Longest phrase: {longest_label}. Len: {max_length}")
-
-
-    def preprocess_sample(img_path, label):
-        """Opens image and convert image to tensor of floats. Process characters from label to int format for CTC"""
-        img = tf.io.read_file(img_path)
-        img = tf.image.decode_png(img, channels=1)
-        img = tf.image.convert_image_dtype(img, tf.float32)
-        
-        img = 1.0 - img
-        img = tf.image.resize_with_pad(img, 32, 256)
-        img = 1.0 - img
-        
-        img = (img - 0.5) / 0.5 #Normalize
-
-        label = tf.strings.unicode_split(label, input_encoding="UTF-8")
-        label = char_to_int(label)
-
-        return img, label
-
-    def tf_augment(image, label):
-        if settings.DEBUG_MODE:
-            print("Image before aug: ", image)
-            print("Dims before aug:", tf.rank(image))
-            print("Shape before aug", image.shape)
-            print("Shape label before: ", label.shape)
-        img_shape = image.shape
-        image = apply_augmentations(image)
-        image.set_shape(img_shape)
-        if settings.DEBUG_MODE:
-            print("Image after aug: ", image)
-            print("Dims after aug:", tf.rank(image))
-            print("Shape after aug", image.shape)
-            print("Shape label after: ", label.shape)
-
-        return image, label
-
-    # Splits
-    total = len(samples)
-    train_split = int(settings.TRAIN_SPLIT * total)
-    val_split = int(settings.VAL_SPLIT * total)
-    test_split = total - train_split - val_split
-
-    train_samples = samples[0:train_split]
-    train_labels = labels[0:train_split]
-    train_ds = tf.data.Dataset.from_tensor_slices((train_samples, train_labels))
-    train_ds = train_ds.map(preprocess_sample).map(tf_augment).shuffle(buffer_size=settings.BATCH_SIZE).padded_batch(settings.BATCH_SIZE, drop_remainder=True)
- 
-    val_samples = samples[train_split:train_split+val_split]
-    val_labels = labels[train_split:train_split+val_split]
-    val_ds = tf.data.Dataset.from_tensor_slices((val_samples, val_labels))
-    val_ds = val_ds.map(preprocess_sample).padded_batch(settings.BATCH_SIZE)
-
-    test_samples = samples[train_split+val_split:]
-    test_labels = labels[train_split+val_split:]
-    test_ds = tf.data.Dataset.from_tensor_slices((test_samples, test_labels))
-    test_ds = test_ds.map(preprocess_sample).padded_batch(settings.BATCH_SIZE)
+        vocab = broker.get_encoding_function().get_vocabulary()
+        print("Char classes:", vocab, "Len: ", len(vocab))
 
     if settings.DEBUG_MODE:
-        print("Splits:  ",len(train_samples), len(val_samples), len(test_samples), len(samples))
-        print("Batched: ",len(train_ds), len(val_ds), len(test_ds))
-        print("Train ds: ", train_ds.element_spec)
+        train_ds = broker.get_training_set()
+        print("Splits Batched:  ", train_ds.cardinality(), broker.get_validation_set().cardinality(), broker.get_test_set().cardinality())
 
         for (sample, label) in train_ds.take(1):
             print("DS sample shape: ", sample.numpy().shape)
@@ -120,7 +57,7 @@ def main():
     latest_model_path = Path(str(settings.LAST_CHECKPOINT_PATH))
     if not latest_model_path.exists():
         print("Trained model not found. Creating new model...")
-        model = build_model(input_shape, len(unique_chars) + 1)
+        model = build_model(input_shape, len(broker.get_encoding_function().get_vocabulary()))
     else:
         print("Trained model found. Loading model...")
         model = keras.models.load_model(
@@ -132,7 +69,7 @@ def main():
     model.compile(
         optimizer=keras.optimizers.Adam(), 
         loss= keras.losses.CTC(),
-        metrics=[CharacterErrorRate(int_to_char), WordErrorRate(int_to_char)],
+        metrics=[CharacterErrorRate(broker.get_decoding_function()), WordErrorRate(broker.get_decoding_function())],
         run_eagerly=settings.EAGER_EXECUTION
     )
     
@@ -140,7 +77,7 @@ def main():
         model.summary()
 
     # TRAINING
-    val_log_callback = ValidationLogCallback(val_ds, int_to_char, logger, val_samples[0])
+    val_log_callback = ValidationLogCallback(broker.get_validation_set(), broker.get_decoding_function(), logger)
     metrics_log_callback = keras.callbacks.CSVLogger(settings.HISTORY_PATH, append=True)
     model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
         filepath=settings.BEST_CHECKPOINT_PATH,
@@ -155,9 +92,9 @@ def main():
     )
 
     history = model.fit(
-        x=train_ds, 
+        x=broker.get_training_set(), 
         epochs=settings.EPOCHS, 
-        validation_data=val_ds,
+        validation_data=broker.get_validation_set(),
         callbacks=[
             val_log_callback,
             metrics_log_callback,
