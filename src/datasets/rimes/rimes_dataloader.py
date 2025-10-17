@@ -4,6 +4,7 @@ class RIMESWordsDataloader(DataLoader):
     def __init__(self, path_to_RIMES):
         self.path_to_RIMES = path_to_RIMES
         self.gt_file_path = path_to_RIMES + '/imagettes_mots_cursif/goodSnippets_total/goodSnippets_total.dat'
+        self.vocabulary = set()
 
     def load_samples_tensor(self):
         samples = []
@@ -24,7 +25,12 @@ class RIMESWordsDataloader(DataLoader):
 
                 samples.append(path)
                 labels.append(label)
+                self.vocabulary.update(label)
 
         print(len(samples))
 
         return (samples, labels)
+    
+    def get_vocabulary(self):
+        return self.vocabulary
+    

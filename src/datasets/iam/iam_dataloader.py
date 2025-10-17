@@ -6,7 +6,7 @@ class IAMLineDataloader(DataLoader):
         self.path_to_IAM = path_to_IAM
         self.samples_path = path_to_IAM + '/lines/'
         self.gt_file_path = path_to_IAM + '/ascii/lines.txt'
-        self.alphabet = set()
+        self.vocabulary = set()
 
     def load_samples_tensor(self):
         samples = []
@@ -21,6 +21,7 @@ class IAMLineDataloader(DataLoader):
                 samples.append(img_path)
                 label = line_split[8].replace('|', ' ')
                 labels.append(label)
+                self.vocabulary.update(label)
 
         return (samples, labels)
 
@@ -31,3 +32,7 @@ class IAMLineDataloader(DataLoader):
         file_path = f"{self.path_to_IAM}/lines/{first_dir}/{second_dir}/{img_name}.png"
 
         return file_path
+    
+    def get_vocabulary(self):
+        return self.vocabulary
+    

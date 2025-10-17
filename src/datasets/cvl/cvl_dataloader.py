@@ -12,6 +12,8 @@ class CVLLineDataloader(DataLoader):
         self.gt_train_file_path = path_to_CVL + '/cvl-database-1-1/trainset/xml/'
         self.namespace = {'pg' : "http://schema.primaresearch.org/PAGE/gts/pagecontent/2010-03-19"}
 
+        self.vocabulary = set()
+
     def load_samples_tensor(self):
         samples = []
         labels = []
@@ -58,6 +60,7 @@ class CVLLineDataloader(DataLoader):
                 label = self._build_label(phrase)
                 paths.append(img_path)
                 labels.append(label)
+                self.vocabulary.update(label)
 
         return paths, labels
 
@@ -71,3 +74,7 @@ class CVLLineDataloader(DataLoader):
     def _build_label(self, phrase):
         words = [word.get("text") for word in phrase.findall("pg:AttrRegion", self.namespace) if word.get("text") is not None]
         return " ".join(words)
+    
+    def get_vocabulary(self):
+        return self.vocabulary
+    
