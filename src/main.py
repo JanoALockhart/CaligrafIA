@@ -16,34 +16,18 @@ def main():
     input_shape = (32, 256, 1)
 
     logger = configure_validation_logger()
+    dataset_broker = configure_datasets(input_shape)
 
     if settings.DEBUG_MODE:
         print("--- DEBUG MODE ACTIVE ---")
 
-    # DATASETS
-    # Create dataset for IAM
-    # TODO: Use Broker class
-    iam_loader = IAMLineDataloader(settings.IAM_PATH)
-    iam_builder = IAMDatasetBuilder(iam_loader)
-
-    broker = DatasetBrokerImpl(
-        train_split_per=settings.TRAIN_SPLIT,
-        val_split_per=settings.VAL_SPLIT,
-        img_height=input_shape[0],
-        img_width=input_shape[1],
-        batch_size=settings.BATCH_SIZE,
-    )
-
-    broker.register_dataset_builder(iam_builder)
-    broker.sample_datasets()
-
     if settings.DEBUG_MODE:
-        vocab = broker.get_encoding_function().get_vocabulary()
+        vocab = dataset_broker.get_encoding_function().get_vocabulary()
         print("Char classes:", vocab, "Len: ", len(vocab))
 
     if settings.DEBUG_MODE:
-        train_ds = broker.get_training_set()
-        print("Splits Batched:  ", train_ds.cardinality(), broker.get_validation_set().cardinality(), broker.get_test_set().cardinality())
+        train_ds = dataset_broker.get_training_set()
+        print("Splits Batched:  ", train_ds.cardinality(), dataset_broker.get_validation_set().cardinality(), dataset_broker.get_test_set().cardinality())
 
         for (sample, label) in train_ds.take(1):
             print("DS sample shape: ", sample.numpy().shape)
@@ -57,7 +41,7 @@ def main():
     latest_model_path = Path(str(settings.LAST_CHECKPOINT_PATH))
     if not latest_model_path.exists():
         print("Trained model not found. Creating new model...")
-        model = build_model(input_shape, len(broker.get_encoding_function().get_vocabulary()))
+        model = build_model(input_shape, len(dataset_broker.get_encoding_function().get_vocabulary()))
     else:
         print("Trained model found. Loading model...")
         model = keras.models.load_model(
@@ -69,7 +53,7 @@ def main():
     model.compile(
         optimizer=keras.optimizers.Adam(), 
         loss= keras.losses.CTC(),
-        metrics=[CharacterErrorRate(broker.get_decoding_function()), WordErrorRate(broker.get_decoding_function())],
+        metrics=[CharacterErrorRate(dataset_broker.get_decoding_function()), WordErrorRate(dataset_broker.get_decoding_function())],
         run_eagerly=settings.EAGER_EXECUTION
     )
     
@@ -77,7 +61,7 @@ def main():
         model.summary()
 
     # TRAINING
-    val_log_callback = ValidationLogCallback(broker.get_validation_set(), broker.get_decoding_function(), logger)
+    val_log_callback = ValidationLogCallback(dataset_broker.get_validation_set(), dataset_broker.get_decoding_function(), logger)
     metrics_log_callback = keras.callbacks.CSVLogger(settings.HISTORY_PATH, append=True)
     model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
         filepath=settings.BEST_CHECKPOINT_PATH,
@@ -92,9 +76,9 @@ def main():
     )
 
     history = model.fit(
-        x=broker.get_training_set(), 
+        x=dataset_broker.get_training_set(), 
         epochs=settings.EPOCHS, 
-        validation_data=broker.get_validation_set(),
+        validation_data=dataset_broker.get_validation_set(),
         callbacks=[
             val_log_callback,
             metrics_log_callback,
@@ -102,6 +86,24 @@ def main():
             latest_checkpoint_callback,
         ],
     )
+
+def configure_datasets(input_shape):
+    dataset_broker = DatasetBrokerImpl(
+        train_split_per=settings.TRAIN_SPLIT,
+        val_split_per=settings.VAL_SPLIT,
+        img_height=input_shape[0],
+        img_width=input_shape[1],
+        batch_size=settings.BATCH_SIZE,
+    )
+
+    iam_loader = IAMLineDataloader(settings.IAM_PATH)
+    iam_builder = IAMDatasetBuilder(iam_loader)
+    dataset_broker.register_dataset_builder(iam_builder)
+
+    #Register more datasets builders here
+    
+    dataset_broker.sample_datasets()
+    return dataset_broker
 
 def configure_validation_logger():
     log_path = Path(str(settings.VALIDATION_LOG_PATH))
