@@ -1,7 +1,7 @@
 from abc import ABC
 from abc import abstractmethod
 
-class DataLoader(ABC):
+class Dataloader(ABC):
     
     @abstractmethod
     def load_samples_tensor(self):
@@ -10,7 +10,7 @@ class DataLoader(ABC):
     @abstractmethod
     def get_vocabulary(self):
         pass
-    
+
     
 
         

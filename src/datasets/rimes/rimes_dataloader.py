@@ -1,6 +1,6 @@
-from datasets.dataloader import DataLoader
+from datasets.dataloader import Dataloader
 
-class RIMESWordsDataloader(DataLoader):
+class RIMESWordsDataloader(Dataloader):
     def __init__(self, path_to_RIMES):
         self.path_to_RIMES = path_to_RIMES
         self.gt_file_path = path_to_RIMES + '/imagettes_mots_cursif/goodSnippets_total/goodSnippets_total.dat'

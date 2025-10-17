@@ -1,9 +1,9 @@
-from datasets.dataloader import DataLoader
+from datasets.dataloader import Dataloader
 import os
 import xml.etree.ElementTree as ET
 
 
-class CVLLineDataloader(DataLoader):
+class CVLLineDataloader(Dataloader):
     def __init__(self, path_to_CVL):
         self.path_to_CVL = path_to_CVL
         self.test_samples_path = path_to_CVL + '/cvl-database-1-1/testset/lines/'

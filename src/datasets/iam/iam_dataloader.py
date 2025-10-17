@@ -1,6 +1,6 @@
-from datasets.dataloader import DataLoader
+from datasets.dataloader import Dataloader
 
-class IAMLineDataloader(DataLoader):
+class IAMLineDataloader(Dataloader):
     """Loads the image paths and its ground truths"""
     def __init__(self, path_to_IAM):
         self.path_to_IAM = path_to_IAM
