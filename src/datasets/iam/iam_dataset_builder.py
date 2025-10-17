@@ -3,10 +3,10 @@ from datasets.dataloader import Dataloader
 from datasets.dataset_builder import DatasetBuilder
 
 class IAMDatasetBuilder(DatasetBuilder):
-    def __init__(self, dataloader:Dataloader, train_split_per=0.95, val_split_per=0.04):
+    def __init__(self, dataloader:Dataloader):
         self.dataloader = dataloader
-        self.train_split_per = train_split_per
-        self.val_split_per = val_split_per
+        self.train_split_per = None
+        self.val_split_per = None
         self.samples, self.labels = dataloader.load_samples_tensor()
         self.total = len(self.samples)
     

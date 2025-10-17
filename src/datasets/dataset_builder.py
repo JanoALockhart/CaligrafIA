@@ -4,6 +4,10 @@ from abc import abstractmethod
 class DatasetBuilder(ABC):
 
     @abstractmethod
+    def set_splits(self, train_split_per, val_split_per):
+        pass
+
+    @abstractmethod
     def get_training_set(self):
         pass
 
