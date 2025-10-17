@@ -17,25 +17,14 @@ from data_augmentation import apply_augmentations
 def main():
     input_shape = (32, 256, 1)
 
-    log_path = Path(str(settings.VALIDATION_LOG_PATH))
-    print(log_path)
-    if not log_path.exists():
-        log_path.touch()
-
-    logging.basicConfig(
-        level=logging.INFO,
-        filename=settings.VALIDATION_LOG_PATH,
-        format="%(asctime)s %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-    
-    logger = logging.getLogger()
+    logger = configure_validation_logger()
 
     if settings.DEBUG_MODE:
         print("--- DEBUG MODE ACTIVE ---")
 
     # DATASETS
     # Create dataset for IAM
+    # TODO: Use Broker class
     iam_dataloader = IAMLineDataloader(settings.IAM_PATH)
     (samples, labels) = iam_dataloader.load_samples_tensor()
 
@@ -176,6 +165,22 @@ def main():
             latest_checkpoint_callback,
         ],
     )
+
+def configure_validation_logger():
+    log_path = Path(str(settings.VALIDATION_LOG_PATH))
+    print(log_path)
+    if not log_path.exists():
+        log_path.touch()
+
+    logging.basicConfig(
+        level=logging.INFO,
+        filename=settings.VALIDATION_LOG_PATH,
+        format="%(asctime)s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    
+    logger = logging.getLogger()
+    return logger
 
 if __name__ == "__main__":
     main()
