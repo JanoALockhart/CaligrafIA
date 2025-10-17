@@ -8,7 +8,7 @@ import tensorflow as tf
 import keras
 import numpy as np
 from keras import layers
-from datasets.dataloader import IAMLineDataloader
+from datasets.iam.iam_dataloader import IAMLineDataloader
 
 from model import build_model
 from callbacks import ValidationLogCallback
