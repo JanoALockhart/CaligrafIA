@@ -1,7 +1,11 @@
 import logging
 from pathlib import Path
+from datasets.cvl.cvl_dataloader import CVLLineDataloader
+from datasets.cvl.cvl_dataset_builder import CVLDatasetBuilder
 from datasets.dataset_broker import DatasetBrokerImpl
 from datasets.iam.iam_dataset_builder import IAMDatasetBuilder
+from datasets.rimes.rimes_dataloader import RIMESWordsDataloader
+from datasets.rimes.rimes_dataset_builder import RIMESDatasetBuilder
 from metrics import CharacterErrorRate, WordErrorRate
 import settings
 import matplotlib.pyplot as plt
@@ -102,6 +106,14 @@ def configure_datasets():
     iam_loader = IAMLineDataloader(settings.IAM_PATH)
     iam_builder = IAMDatasetBuilder(iam_loader)
     dataset_broker.register_dataset_builder(iam_builder)
+
+    rimes_loader = RIMESWordsDataloader(settings.RIMES_PATH)
+    rimes_builder = RIMESDatasetBuilder(rimes_loader)
+    dataset_broker.register_dataset_builder(rimes_builder)
+
+    cvl_loader = CVLLineDataloader(settings.CVL_PATH)
+    cvl_builder = CVLDatasetBuilder(cvl_loader)
+    dataset_broker.register_dataset_builder(cvl_builder)
 
     #Register more datasets builders here
     
