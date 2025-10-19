@@ -62,4 +62,9 @@ class RIMESDatasetBuilder(DatasetBuilder):
         test_ds = self.build_phrases(test_ds)
         return test_ds
     
+    def get_vocabulary(self):
+        vocab = super().get_vocabulary()
+        vocab.add(" ")
+        return vocab
+    
     
