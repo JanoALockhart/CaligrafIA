@@ -1,24 +1,51 @@
 from abc import ABC
 from abc import abstractmethod
 
+import tensorflow as tf
+
+from datasets.dataloader import Dataloader
+
 class DatasetBuilder(ABC):
 
-    @abstractmethod
+    def __init__(self, dataloader:Dataloader):
+        self.dataloader = dataloader
+        self.train_split_per = None
+        self.val_split_per = None
+        self.samples, self.labels = dataloader.load_samples_tensor()
+        self.total = len(self.samples)
+
     def set_splits(self, train_split_per, val_split_per):
-        pass
+        self.train_split_per = train_split_per
+        self.val_split_per = val_split_per
 
     @abstractmethod
     def get_training_set(self):
-        pass
+        train_split = int(self.train_split_per * self.total)
+        train_samples = self.samples[0:train_split]
+        train_labels = self.labels[0:train_split]
+        train_ds = tf.data.Dataset.from_tensor_slices((train_samples, train_labels))
+
+        return train_ds
 
     @abstractmethod
     def get_validation_set(self):
-        pass
+        train_split = int(self.train_split_per * self.total)
+        val_split = int(self.val_split_per * self.total)
+        val_samples = self.samples[train_split:train_split+val_split]
+        val_labels = self.labels[train_split:train_split+val_split]
+        val_ds = tf.data.Dataset.from_tensor_slices((val_samples, val_labels))
+
+        return val_ds
 
     @abstractmethod
     def get_test_set(self):
-        pass
+        train_split = int(self.train_split_per * self.total)
+        val_split = int(self.val_split_per * self.total)
+        test_samples = self.samples[train_split+val_split:]
+        test_labels = self.labels[train_split+val_split:]
+        test_ds = tf.data.Dataset.from_tensor_slices((test_samples, test_labels))
 
-    @abstractmethod
+        return test_ds
+
     def get_vocabulary(self):
-        pass
+        return self.dataloader.get_vocabulary()
