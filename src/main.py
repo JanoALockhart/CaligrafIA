@@ -101,6 +101,7 @@ def configure_datasets():
         img_height=settings.IMG_HEIGHT,
         img_width=settings.IMG_WIDTH,
         batch_size=settings.BATCH_SIZE,
+        data_augmentation=True
     )
 
     iam_loader = IAMLineDataloader(settings.IAM_PATH)
