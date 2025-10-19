@@ -92,19 +92,9 @@ class DatasetBrokerImpl(DatasetBroker):
         return img, label
     
     def _tf_augment(self, image, label):
-        if settings.DEBUG_MODE:
-            print("Image before aug: ", image)
-            print("Dims before aug:", tf.rank(image))
-            print("Shape before aug", image.shape)
-            print("Shape label before: ", label.shape)
         img_shape = image.shape
         image = apply_augmentations(image)
         image.set_shape(img_shape)
-        if settings.DEBUG_MODE:
-            print("Image after aug: ", image)
-            print("Dims after aug:", tf.rank(image))
-            print("Shape after aug", image.shape)
-            print("Shape label after: ", label.shape)
 
         return image, label
 
