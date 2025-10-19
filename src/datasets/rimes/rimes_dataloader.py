@@ -27,8 +27,6 @@ class RIMESWordsDataloader(Dataloader):
                 labels.append(label)
                 self.vocabulary.update(label)
 
-        print(len(samples))
-
         return (samples, labels)
     
     def get_vocabulary(self):
