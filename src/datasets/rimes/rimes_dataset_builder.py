@@ -30,8 +30,9 @@ class RIMESDatasetBuilder(DatasetBuilder):
             sentence_img[start_height:start_height+height, x:x+width] = img
             x += width + self.space_between_words_px
         
+        sentence_img = sentence_img / 255.0
         sentence_img = np.expand_dims(sentence_img, axis=-1)
-
+        
         return sentence_img
 
     def _combine_words(self, paths, labels):

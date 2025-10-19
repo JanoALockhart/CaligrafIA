@@ -11,7 +11,7 @@ class CVLDatasetBuilder(DatasetBuilder):
     def _load_tif(self, path):
         with Image.open(path.numpy().decode("utf-8")) as image:
             img = image.convert("L")
-            arr = np.array(img, dtype=np.float32)
+            arr = np.array(img, dtype=np.float32) / 255.0
 
         arr = np.expand_dims(arr, axis=-1)
         return arr
