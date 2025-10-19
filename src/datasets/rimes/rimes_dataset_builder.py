@@ -44,20 +44,22 @@ class RIMESDatasetBuilder(DatasetBuilder):
 
     def get_training_set(self):
         train_ds = super().get_training_set()
-        train_ds = train_ds.batch(self.words_per_line, drop_remainder=True).map(self._combine_words)
+        train_ds = self.build_phrases(train_ds)
         
         return train_ds
+
+    def build_phrases(self, dataset):
+        dataset = dataset.batch(self.words_per_line, drop_remainder=True).map(self._combine_words)
+        return dataset
     
     def get_validation_set(self):
         val_ds = super().get_validation_set()
-        val_ds = val_ds.batch(self.words_per_line, drop_remainder=True).map(self._combine_words)
-        
+        val_ds = self.build_phrases(val_ds)
         return val_ds
     
     def get_test_set(self):
         test_ds = super().get_test_set()
-        test_ds = test_ds.batch(self.words_per_line, drop_remainder=True).map(self._combine_words)
-
+        test_ds = self.build_phrases(test_ds)
         return test_ds
     
     
