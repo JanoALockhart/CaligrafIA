@@ -45,7 +45,7 @@ class RIMESDatasetBuilder(DatasetBuilder):
 
     def get_training_set(self):
         train_ds = super().get_training_set()
-        train_ds = self.build_phrases(train_ds)
+        train_ds = train_ds.batch(self.words_per_line, drop_remainder=True).shuffle(train_ds.cardinality()).map(self._combine_words)
         
         return train_ds
 
