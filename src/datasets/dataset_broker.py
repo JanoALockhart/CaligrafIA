@@ -37,12 +37,13 @@ class DatasetBroker(ABC):
         pass
 
 class DatasetBrokerImpl(DatasetBroker):
-    def __init__(self, train_split_per, val_split_per, img_height, img_width, batch_size):
+    def __init__(self, train_split_per, val_split_per, img_height, img_width, batch_size, data_augmentation = True):
         self.train_split = train_split_per
         self.val_split = val_split_per
         self.img_height = img_height
         self.img_width = img_width
         self.batch_size = batch_size
+        self.data_augmentation = data_augmentation
         self.dataset_builders:list[DatasetBuilder] = []
 
         self.train_ds = None
@@ -70,7 +71,7 @@ class DatasetBrokerImpl(DatasetBroker):
             test_datasets.append(ds_builder.get_test_set())
 
         vocabulary = sorted(vocabulary)
-        print(vocabulary)
+        
         self.encoding_function = layers.StringLookup(vocabulary=vocabulary, oov_token="[UNK]")
         self.decoding_function = layers.StringLookup(vocabulary=vocabulary, oov_token="[UNK]", invert=True)
 
@@ -108,8 +109,13 @@ class DatasetBrokerImpl(DatasetBroker):
         return image, label
 
     def get_training_set(self):
-        return self.train_ds.map(self._preprocess_sample).map(self._tf_augment).padded_batch(self.batch_size, drop_remainder=True)
+        train_dataset = self.train_ds.map(self._preprocess_sample)
+        if self.data_augmentation:
+            train_dataset = train_dataset.map(self._tf_augment)
+        train_dataset = train_dataset.padded_batch(self.batch_size, drop_remainder=True)
     
+        return train_dataset
+
     def get_validation_set(self):
         return self.val_ds.map(self._preprocess_sample).padded_batch(self.batch_size)
     
