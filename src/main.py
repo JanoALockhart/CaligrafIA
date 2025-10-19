@@ -17,8 +17,6 @@ from model import build_model
 from callbacks import ValidationLogCallback
 
 def main():
-    input_shape = (32, 256, 1)
-
     logger = configure_validation_logger()
     dataset_broker = configure_datasets()
 
