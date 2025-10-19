@@ -12,8 +12,9 @@ class RIMESDatasetBuilder(DatasetBuilder):
 
     def _load_concat_words(self, paths):
         images = []
-        for p in paths:
-            with Image.open(p.numpy().decode("utf-8")) as image:
+        for p in paths.numpy():
+            path_decoded = p.decode("utf-8")
+            with Image.open(path_decoded) as image:
                 img = image.convert("L")
                 images.append(np.array(img, dtype=np.float32))
 
