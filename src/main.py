@@ -16,7 +16,7 @@ def main():
     input_shape = (32, 256, 1)
 
     logger = configure_validation_logger()
-    dataset_broker = configure_datasets(input_shape)
+    dataset_broker = configure_datasets()
 
     if settings.DEBUG_MODE:
         print("--- DEBUG MODE ACTIVE ---")
@@ -41,7 +41,10 @@ def main():
     latest_model_path = Path(str(settings.LAST_CHECKPOINT_PATH))
     if not latest_model_path.exists():
         print("Trained model not found. Creating new model...")
-        model = build_model(input_shape, len(dataset_broker.get_encoding_function().get_vocabulary()))
+        model = build_model(
+            input_shape=(settings.IMG_HEIGHT, settings.IMG_WIDTH, 1), 
+            alphabet_length=len(dataset_broker.get_encoding_function().get_vocabulary())
+        )
     else:
         print("Trained model found. Loading model...")
         model = keras.models.load_model(
@@ -87,12 +90,12 @@ def main():
         ],
     )
 
-def configure_datasets(input_shape):
+def configure_datasets():
     dataset_broker = DatasetBrokerImpl(
         train_split_per=settings.TRAIN_SPLIT,
         val_split_per=settings.VAL_SPLIT,
-        img_height=input_shape[0],
-        img_width=input_shape[1],
+        img_height=settings.IMG_HEIGHT,
+        img_width=settings.IMG_WIDTH,
         batch_size=settings.BATCH_SIZE,
     )
 
