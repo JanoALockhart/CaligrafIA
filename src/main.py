@@ -25,14 +25,14 @@ def main():
         model_manager.train()
     
     elif args.mode == TEST:
-        model_path = f"{settings.SAVED_MODELS_PATH}{args.restore_model}"
+        model_path = f"{settings.SAVED_MODELS_PATH}{args.load}"
         model_manager.test(model_path)
 
 def get_command_args():
     parser = argparse.ArgumentParser(description="Training and evaluation of deep learning model.")
     
-    parser.add_argument("--mode", required=True, choices=[TRAIN, TEST])
-    parser.add_argument("--restore_model", required=False)
+    parser.add_argument("-m","--mode", required=True, choices=[TRAIN, TEST])
+    parser.add_argument("-l", "--load", required=False)
 
     return parser.parse_args()
 
