@@ -1,3 +1,4 @@
+import tensorflow as tf
 from datasets.dataset_broker import DatasetBroker
 import settings
 from callbacks import ValidationLogCallback
@@ -11,13 +12,6 @@ class ModelManager():
     def __init__(self, dataset_broker:DatasetBroker, logger):
         self.dataset_broker = dataset_broker
         self.logger = logger
-
-    def test():
-        pass
-
-    def cualitative_matrix():
-        pass
-
 
     def train(self):
         latest_model_path = Path(str(settings.LAST_CHECKPOINT_PATH))
@@ -71,3 +65,21 @@ class ModelManager():
                 latest_checkpoint_callback,
             ],
         )
+    
+    
+    def test(self, model_path):
+        model = keras.models.load_model(filepath=model_path, compile=False)
+        cer_metric = CharacterErrorRate(self.dataset_broker.get_decoding_function())
+        wer_metric = WordErrorRate(self.dataset_broker.get_decoding_function())
+
+        for batch in self.dataset_broker.get_test_set():
+            x, y = batch
+            logits = model.predict(x)
+            cer_metric.update_state(y, logits)
+            wer_metric.update_state(y, logits)
+
+        cer = cer_metric.result()
+        wer = wer_metric.result()
+
+        print(f"CER: {cer}")
+        print(f"WER: {wer}")
