@@ -1,3 +1,4 @@
+import argparse
 import logging
 from pathlib import Path
 from datasets.cvl.cvl_dataloader import CVLLineDataloader
@@ -10,14 +11,30 @@ from model_manager import ModelManager
 import settings
 from datasets.iam.iam_dataloader import IAMLineDataloader
 
+TRAIN = "train"
+TEST = "test"
 
 def main():
+    args = get_command_args()
     logger = configure_validation_logger()
     dataset_broker = configure_datasets()
     model_manager = ModelManager(dataset_broker, logger)
 
-    model_manager.train()
+    
+    if args.mode == TRAIN:
+        model_manager.train()
+    
+    elif args.mode == TEST:
+        model_path = f"{settings.SAVED_MODELS_PATH}{args.restore_model}"
+        model_manager.test(model_path)
 
+def get_command_args():
+    parser = argparse.ArgumentParser(description="Training and evaluation of deep learning model.")
+    
+    parser.add_argument("--mode", required=True, choices=[TRAIN, TEST])
+    parser.add_argument("--restore_model", required=False)
+
+    return parser.parse_args()
 
 def configure_datasets():
     dataset_broker = DatasetBrokerImpl(
