@@ -8,7 +8,6 @@ from datasets.rimes.rimes_dataloader import RIMESWordsDataloader
 from datasets.rimes.rimes_dataset_builder import RIMESDatasetBuilder
 from model_manager import ModelManager
 import settings
-import numpy as np
 from datasets.iam.iam_dataloader import IAMLineDataloader
 
 
@@ -17,29 +16,8 @@ def main():
     dataset_broker = configure_datasets()
     model_manager = ModelManager(dataset_broker, logger)
 
-    debug(dataset_broker)
-
     model_manager.train()
 
-def debug(dataset_broker):
-    if settings.DEBUG_MODE:
-        print("--- DEBUG MODE ACTIVE ---")
-
-    if settings.DEBUG_MODE:
-        vocab = dataset_broker.get_encoding_function().get_vocabulary()
-        print("Char classes:", vocab, "Len: ", len(vocab))
-
-    if settings.DEBUG_MODE:
-        train_ds = dataset_broker.get_training_set()
-        print("Splits Batched:  ", train_ds.cardinality(), dataset_broker.get_validation_set().cardinality(), dataset_broker.get_test_set().cardinality())
-
-        for (sample, label) in train_ds.take(1):
-            print("DS sample shape: ", sample.numpy().shape)
-            print("Max, min values in sample: ", np.max(sample[0].numpy()), np.min(sample[0].numpy()))
-            print("y_true: ", label.numpy())
-            #plt.imshow(sample[0])
-            #plt.title(tf.strings.reduce_join(int_to_char(label[0])).numpy().decode("UTF-8"))
-            #plt.show()
 
 def configure_datasets():
     dataset_broker = DatasetBrokerImpl(
