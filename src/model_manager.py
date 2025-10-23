@@ -1,3 +1,4 @@
+from matplotlib import pyplot as plt
 import tensorflow as tf
 from datasets.dataset_broker import DatasetBroker
 import settings
@@ -82,4 +83,39 @@ class ModelManager():
         wer = wer_metric.result()
 
         return cer, wer
-        
+    
+    def qualitative_matrix(self, model_path, side=4):
+        model = keras.models.load_model(filepath=model_path, compile=False)
+        cer_metric = CharacterErrorRate(self.dataset_broker.get_decoding_function())
+
+        plt.figure(figsize=(18, 9))
+        for i, sample in enumerate(self.dataset_broker.get_test_set().unbatch().take(side*side)):
+            x, y = sample
+            x = tf.expand_dims(x, axis=0)
+            y = tf.expand_dims(y, axis=0)
+
+            logits = model.predict(x)
+            cer_metric.update_state(y, logits)
+            cer = cer_metric.result()
+            cer_metric.reset_state()
+
+            img = tf.squeeze(x, axis=0)
+            true_text = self.dataset_broker.get_decoding_function()(y)
+            true_text = tf.strings.reduce_join(true_text).numpy().decode("utf-8").replace("[UNK]", "")
+            pred_text = self._decode_logits(logits)
+            plt.subplot(side, side, i+1)
+            plt.imshow(img)
+            plt.axis("off")
+            plt.title(f"True: {true_text} \n Pred: {pred_text}\n CER: {cer*100: .2f}", fontsize=8)
+
+        plt.savefig(f"{settings.PLOTS_PATH}cualitative_matrix.png")
+        plt.show()
+
+    def _decode_logits(self, logits):
+        print(logits.shape)
+
+        input_len = tf.ones(logits.shape[0]) * logits.shape[1]
+        top_paths, probabilities = keras.ops.ctc_decode(logits, sequence_lengths=input_len, strategy="greedy")
+        y_pred_ctc_decoded = top_paths[0][0]
+        pred_string = tf.strings.reduce_join(self.dataset_broker.get_decoding_function()(y_pred_ctc_decoded)).numpy().decode("utf-8").replace("[UNK]", "")
+        return pred_string

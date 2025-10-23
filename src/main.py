@@ -14,6 +14,7 @@ from datasets.iam.iam_dataloader import IAMLineDataloader
 TRAIN = "train"
 TEST = "test"
 INFO = "info"
+MATRIX = "matrix"
 
 def main():
     args = get_command_args()
@@ -39,12 +40,16 @@ def main():
         dataset_info =  dataset_broker.get_datasets_info()
         with open(settings.INFO_FILE_PATH, "w") as file:
             file.write(dataset_info)
+    
+    elif args.mode == MATRIX:
+        model_path = f"{settings.SAVED_MODELS_PATH}{args.load}"
+        model_manager.qualitative_matrix(model_path)
 
 
 def get_command_args():
     parser = argparse.ArgumentParser(description="Training and evaluation of deep learning model.")
     
-    parser.add_argument("-m","--mode", required=True, choices=[TRAIN, TEST, INFO])
+    parser.add_argument("-m","--mode", required=True, choices=[TRAIN, TEST, INFO, MATRIX])
     parser.add_argument("-l", "--load", required=False)
 
     return parser.parse_args()
