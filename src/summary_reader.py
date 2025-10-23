@@ -8,6 +8,29 @@ def main():
     for metric_idx in range(1, len(history.columns)//2 + 1):
         plot_metric(history, metric_idx)
 
+    build_description(history) 
+
+def build_description(history):
+    val_cers = history["val_CER"]
+    epoch_saved = val_cers.idxmin()
+
+    saved_model_train_cer = history["CER"][epoch_saved]
+    saved_model_val_cer = history["val_CER"][epoch_saved]
+    saved_model_train_wer = history["WER"][epoch_saved]
+    saved_model_val_wer = history["val_WER"][epoch_saved]
+    saved_model_train_loss = history["loss"][epoch_saved]
+    saved_model_val_loss = history["val_loss"][epoch_saved]   
+
+    with open(settings.DESCRIPTION_FILE_PATH, "w") as file:
+        file.write(f"Total epochs: {len(val_cers)} \n")
+        file.write(f"Epoch saved: {epoch_saved+1} \n")
+        file.write(f"Train Loss: {saved_model_train_loss}\n")
+        file.write(f"Validation Loss: {saved_model_val_loss}\n")
+        file.write(f"Train CER: {saved_model_train_cer*100: .2f}% \n")
+        file.write(f"Validation CER: {saved_model_val_cer*100: .2f}%\n")
+        file.write(f"Train WER: {saved_model_train_wer*100: .2f}%\n")
+        file.write(f"Validation WER: {saved_model_val_wer*100: .2f}%\n")
+
 def plot_metric(history, metric_idx):
     
     metric_name = history.columns[metric_idx]
