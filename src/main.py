@@ -26,7 +26,14 @@ def main():
     
     elif args.mode == TEST:
         model_path = f"{settings.SAVED_MODELS_PATH}{args.load}"
-        model_manager.test(model_path)
+        cer, wer = model_manager.test(model_path)
+
+        with open(settings.TEST_METRICS_FILE_PATH, "w") as file:
+            file.write(f"--- Metrics on the Test Set --- \n")
+            file.write(f"Model: {model_path}\n")
+            file.write(f"Test CER: {cer*100: .2f}%\n")
+            file.write(f"Test WER: {wer*100: .2f}%\n")
+
 
 def get_command_args():
     parser = argparse.ArgumentParser(description="Training and evaluation of deep learning model.")
@@ -65,7 +72,7 @@ def configure_datasets():
 
 def configure_validation_logger():
     log_path = Path(str(settings.VALIDATION_LOG_PATH))
-    print(log_path)
+
     if not log_path.exists():
         log_path.touch()
 
