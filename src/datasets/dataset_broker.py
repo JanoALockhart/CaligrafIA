@@ -128,11 +128,27 @@ class DatasetBrokerImpl(DatasetBroker):
         
         buffer.write(f"=== Datasets === \n")
         
+        total_train = 0
+        total_val = 0
+        total_test = 0
         for ds_builder in self.dataset_builders:
             buffer.write(f"--- {ds_builder.get_name()} --- \n")
-            buffer.write(f"Train: {ds_builder.get_training_set().cardinality()} images\n")
-            buffer.write(f"Validation: {ds_builder.get_validation_set().cardinality()} images \n")
-            buffer.write(f"Test: {ds_builder.get_test_set().cardinality()} images \n")
+            train_size = ds_builder.get_training_set().cardinality()
+            val_size = ds_builder.get_validation_set().cardinality()
+            test_size = ds_builder.get_test_set().cardinality()
+
+            buffer.write(f"Train: {train_size} images\n")
+            buffer.write(f"Validation: {val_size} images \n")
+            buffer.write(f"Test: {test_size} images \n")
+
+            total_train += train_size
+            total_val += val_size
+            total_test += test_size
+
+        buffer.write(f"===TOTAL===\n")
+        buffer.write(f"Train: {total_train} images\n")
+        buffer.write(f"Validation: {total_val} images\n")
+        buffer.write(f"Test: {total_test} images\n")
 
         return buffer.getvalue()
 
