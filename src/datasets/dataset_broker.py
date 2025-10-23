@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from io import StringIO
 
 import tensorflow as tf
 from keras import layers
@@ -117,7 +118,22 @@ class DatasetBrokerImpl(DatasetBroker):
     
     def get_decoding_function(self):
         return self.decoding_function
+    
+    def get_datasets_info(self):
+        buffer = StringIO()
+        buffer.write(f"=== Split Percentajes === \n")
+        buffer.write(f"Train: {self.train_split: .2f}%\n")
+        buffer.write(f"Validation: {self.val_split: .2f}%\n")
+        buffer.write(f"Test: {1-self.val_split-self.train_split: .2f}%\n")
+        
+        buffer.write(f"=== Datasets === \n")
+        
+        for ds_builder in self.dataset_builders:
+            buffer.write(f"--- Dataset <NAME> --- \n")
+            buffer.write(f"Train: {ds_builder.get_training_set().cardinality()} images\n")
+            buffer.write(f"Validation: {ds_builder.get_validation_set().cardinality()} images \n")
+            buffer.write(f"Test: {ds_builder.get_test_set().cardinality()} images \n")
 
-
+        return buffer.getvalue()
 
     

@@ -13,6 +13,7 @@ from datasets.iam.iam_dataloader import IAMLineDataloader
 
 TRAIN = "train"
 TEST = "test"
+INFO = "info"
 
 def main():
     args = get_command_args()
@@ -33,12 +34,17 @@ def main():
             file.write(f"Model: {model_path}\n")
             file.write(f"Test CER: {cer*100: .2f}%\n")
             file.write(f"Test WER: {wer*100: .2f}%\n")
+    
+    elif args.mode == INFO:
+        dataset_info =  dataset_broker.get_datasets_info()
+        with open(settings.INFO_FILE_PATH, "w") as file:
+            file.write(dataset_info)
 
 
 def get_command_args():
     parser = argparse.ArgumentParser(description="Training and evaluation of deep learning model.")
     
-    parser.add_argument("-m","--mode", required=True, choices=[TRAIN, TEST])
+    parser.add_argument("-m","--mode", required=True, choices=[TRAIN, TEST, INFO])
     parser.add_argument("-l", "--load", required=False)
 
     return parser.parse_args()
