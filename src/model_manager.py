@@ -81,5 +81,5 @@ class ModelManager():
         cer = cer_metric.result()
         wer = wer_metric.result()
 
-        print(f"CER: {cer}")
-        print(f"WER: {wer}")
+        print(f"CER: {cer*100: .2f}%")
+        print(f"WER: {wer*100: .2f}%")
