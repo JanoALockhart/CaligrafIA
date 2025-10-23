@@ -27,4 +27,6 @@ class IAMDatasetBuilder(DatasetBuilder):
         test_ds = test_ds.map(self._load_image)
         return test_ds
 
+    def get_name(self):
+        return "IAM"
         

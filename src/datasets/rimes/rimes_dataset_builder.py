@@ -69,4 +69,7 @@ class RIMESDatasetBuilder(DatasetBuilder):
         vocab.add(" ")
         return vocab
     
+    def get_name(self):
+        return "RIMES"
+    
     

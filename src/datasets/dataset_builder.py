@@ -49,3 +49,7 @@ class DatasetBuilder(ABC):
 
     def get_vocabulary(self):
         return self.dataloader.get_vocabulary()
+    
+    @abstractmethod
+    def get_name(self):
+        return "NO_NAME"

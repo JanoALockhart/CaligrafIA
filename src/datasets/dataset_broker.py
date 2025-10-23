@@ -129,7 +129,7 @@ class DatasetBrokerImpl(DatasetBroker):
         buffer.write(f"=== Datasets === \n")
         
         for ds_builder in self.dataset_builders:
-            buffer.write(f"--- Dataset <NAME> --- \n")
+            buffer.write(f"--- {ds_builder.get_name()} --- \n")
             buffer.write(f"Train: {ds_builder.get_training_set().cardinality()} images\n")
             buffer.write(f"Validation: {ds_builder.get_validation_set().cardinality()} images \n")
             buffer.write(f"Test: {ds_builder.get_test_set().cardinality()} images \n")
