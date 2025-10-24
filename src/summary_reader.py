@@ -2,8 +2,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import settings
 
+LAST_EPOCH = 42
+
 def main():
     history = pd.read_csv(settings.HISTORY_PATH)
+    if LAST_EPOCH is not None:
+        history = history[:LAST_EPOCH]
     
     for metric_idx in range(1, len(history.columns)//2 + 1):
         plot_metric(history, metric_idx)
