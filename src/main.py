@@ -10,11 +10,10 @@ from datasets.rimes.rimes_dataset_builder import RIMESDatasetBuilder
 from model_manager import ModelManager
 import settings
 from datasets.iam.iam_dataloader import IAMLineDataloader
+import summary_reader
 
 TRAIN = "train"
 TEST = "test"
-INFO = "info"
-MATRIX = "matrix"
 
 def main():
     args = get_command_args()
@@ -22,34 +21,35 @@ def main():
     dataset_broker = configure_datasets()
     model_manager = ModelManager(dataset_broker, logger)
 
-    
     if args.mode == TRAIN:
         model_manager.train()
     
     elif args.mode == TEST:
         model_path = f"{settings.SAVED_MODELS_PATH}{args.load}"
-        cer, wer = model_manager.test(model_path)
-
-        with open(settings.TEST_METRICS_FILE_PATH, "w") as file:
-            file.write(f"--- Metrics on the Test Set --- \n")
-            file.write(f"Model: {model_path}\n")
-            file.write(f"Test CER: {cer*100: .2f}%\n")
-            file.write(f"Test WER: {wer*100: .2f}%\n")
-    
-    elif args.mode == INFO:
-        dataset_info =  dataset_broker.get_datasets_info()
-        with open(settings.INFO_FILE_PATH, "w") as file:
-            file.write(dataset_info)
-    
-    elif args.mode == MATRIX:
-        model_path = f"{settings.SAVED_MODELS_PATH}{args.load}"
+        write_datasets_info(dataset_broker)
+        summary_reader.plot_summary()
         model_manager.qualitative_matrix(model_path)
+        write_test_results(model_manager, model_path)
+
+def write_datasets_info(dataset_broker):
+    dataset_info =  dataset_broker.get_datasets_info()
+    with open(settings.DATASETS_INFO_FILE_PATH, "w") as file:
+        file.write(dataset_info)
+
+def write_test_results(model_manager, model_path):
+    cer, wer = model_manager.test(model_path)
+
+    with open(settings.TEST_METRICS_FILE_PATH, "w") as file:
+        file.write(f"--- Metrics on the Test Set --- \n")
+        file.write(f"Model: {model_path}\n")
+        file.write(f"Test CER: {cer*100: .2f}%\n")
+        file.write(f"Test WER: {wer*100: .2f}%\n")
 
 
 def get_command_args():
     parser = argparse.ArgumentParser(description="Training and evaluation of deep learning model.")
     
-    parser.add_argument("-m","--mode", required=True, choices=[TRAIN, TEST, INFO, MATRIX])
+    parser.add_argument("-m","--mode", required=True, choices=[TRAIN, TEST])
     parser.add_argument("-l", "--load", required=False)
 
     return parser.parse_args()

@@ -84,6 +84,7 @@ class ModelManager():
 
         return cer, wer
     
+    # TODO: Refactor plot out
     def qualitative_matrix(self, model_path, side=4):
         model = keras.models.load_model(filepath=model_path, compile=False)
         cer_metric = CharacterErrorRate(self.dataset_broker.get_decoding_function())

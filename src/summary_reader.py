@@ -2,12 +2,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import settings
 
-LAST_EPOCH = 42
+last_epoch = 42
 
-def main():
+def plot_summary(last_epoch = None):
     history = pd.read_csv(settings.HISTORY_PATH)
-    if LAST_EPOCH is not None:
-        history = history[:LAST_EPOCH]
+    if last_epoch is not None:
+        history = history[:last_epoch]
     
     for metric_idx in range(1, len(history.columns)//2 + 1):
         plot_metric(history, metric_idx)
@@ -25,7 +25,7 @@ def build_description(history):
     saved_model_train_loss = history["loss"][epoch_saved]
     saved_model_val_loss = history["val_loss"][epoch_saved]   
 
-    with open(settings.DESCRIPTION_FILE_PATH, "w") as file:
+    with open(settings.TRAINING_METRICS_FILE_PATH, "w") as file:
         file.write(f"Total epochs: {len(val_cers)} \n")
         file.write(f"Epoch saved: {epoch_saved+1} \n")
         file.write(f"Train Loss: {saved_model_train_loss}\n")
@@ -56,4 +56,4 @@ def plot_metric(history, metric_idx):
 
 
 if __name__ == "__main__":
-    main()
+    plot_summary()
