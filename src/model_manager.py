@@ -109,7 +109,7 @@ class ModelManager():
             plt.axis("off")
             plt.title(f"True: {true_text} \n Pred: {pred_text}\n CER: {cer*100: .2f}", fontsize=8)
 
-        plt.savefig(f"{settings.PLOTS_PATH}cualitative_matrix.png")
+        plt.savefig(f"{settings.PLOTS_PATH}/cualitative_matrix.png")
         plt.show()
 
     def _decode_logits(self, logits):

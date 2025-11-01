@@ -25,7 +25,7 @@ def main():
         model_manager.train()
     
     elif args.mode == TEST:
-        model_path = f"{settings.SAVED_MODELS_PATH}{args.load}"
+        model_path = f"{settings.SAVED_MODELS_PATH}/{args.load}"
         write_datasets_info(dataset_broker)
         summary_reader.plot_summary()
         model_manager.qualitative_matrix(model_path)

@@ -51,7 +51,7 @@ def plot_metric(history, metric_idx):
     plt.legend()
     plt.grid(visible=True, linestyle="--", alpha=0.6)
     
-    plt.savefig(settings.PLOTS_PATH + f"plot_{metric_name}.png")
+    plt.savefig(settings.PLOTS_PATH + f"/plot_{metric_name}.png")
     plt.show()
 
 
