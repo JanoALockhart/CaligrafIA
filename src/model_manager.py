@@ -29,6 +29,8 @@ class ModelManager():
                 compile=False
             )
 
+        keras.utils.plot_model(model, settings.MODEL_ARCHITECTURE_FILE_PATH)
+
         #COMPILE
         model.compile(
             optimizer=keras.optimizers.Adam(),
@@ -36,9 +38,6 @@ class ModelManager():
             metrics=[CharacterErrorRate(self.dataset_broker.get_decoding_function()), WordErrorRate(self.dataset_broker.get_decoding_function())],
             run_eagerly=settings.EAGER_EXECUTION
         )
-
-        if settings.DEBUG_MODE:
-            model.summary()
 
         # TRAINING
         val_log_callback = ValidationLogCallback(self.dataset_broker.get_validation_set(), self.dataset_broker.get_decoding_function(), self.logger)
