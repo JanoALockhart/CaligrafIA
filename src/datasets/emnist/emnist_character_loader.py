@@ -2,30 +2,22 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 
 class EMNISTCharacterDataset():
-    def __init__(self):
-        self.ds_train, self.info = tfds.load(
+    def __init__(self, train_split=0.6, val_split=0.2):
+        self.dataset, self.info = tfds.load(
             "emnist",
-            split="train[:90%]",
+            split="train+test",
             as_supervised=True,
             with_info=True
         )
 
-        self.ds_val = tfds.load(
-            "emnist",
-            split="train[90%:]",
-            as_supervised=True
-        )
-
-        self.ds_test = tfds.load(
-            "emnist",
-            split="test",
-            as_supervised=True,
-        )
-        self.characters = tf.constant(list("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"))
-
-
-        print("Loaded Sets: ", )
+        train_size = self.dataset.cardinality().numpy() * train_split
+        val_size = self.dataset.cardinality().numpy() * val_split
         
+        self.ds_train = self.dataset.take(train_size)
+        self.ds_val = self.dataset.skip(train_size).take(val_size)
+        self.ds_test = self.dataset.skip(train_size+val_size)
+
+        self.characters = tf.constant(list("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"))
 
     def _fix_orientation(self, image, label):
         image = tf.image.transpose(image)
