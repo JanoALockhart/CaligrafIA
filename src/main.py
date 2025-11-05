@@ -4,6 +4,8 @@ from pathlib import Path
 from datasets.cvl.cvl_dataloader import CVLLineDataloader
 from datasets.cvl.cvl_dataset_builder import CVLDatasetBuilder
 from datasets.dataset_broker import DatasetBrokerImpl
+from datasets.emnist.emnist_character_loader import EMNISTCharacterDataset
+from datasets.emnist.emnist_line_dataset_builder import EMNISTLineDatasetBuilder
 from datasets.iam.iam_dataset_builder import IAMDatasetBuilder
 from datasets.rimes.rimes_dataloader import RIMESWordsDataloader
 from datasets.rimes.rimes_dataset_builder import RIMESDatasetBuilder
@@ -63,20 +65,24 @@ def configure_datasets():
         img_height=settings.IMG_HEIGHT,
         img_width=settings.IMG_WIDTH,
         batch_size=settings.BATCH_SIZE,
-        data_augmentation=True
+        data_augmentation=False
     )
 
-    iam_loader = IAMLineDataloader(settings.IAM_PATH)
-    iam_builder = IAMDatasetBuilder(iam_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)
-    dataset_broker.register_dataset_builder(iam_builder)
+    emnist_char_loader = EMNISTCharacterDataset(settings.TRAIN_SPLIT, settings.VAL_SPLIT)
+    emnist_line_builder = EMNISTLineDatasetBuilder(emnist_char_loader)
+    dataset_broker.register_dataset_builder(emnist_line_builder)
 
-    rimes_loader = RIMESWordsDataloader(settings.RIMES_PATH)
-    rimes_builder = RIMESDatasetBuilder(rimes_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)
-    dataset_broker.register_dataset_builder(rimes_builder)
+    #iam_loader = IAMLineDataloader(settings.IAM_PATH)
+    #iam_builder = IAMDatasetBuilder(iam_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)
+    #dataset_broker.register_dataset_builder(iam_builder)
 
-    cvl_loader = CVLLineDataloader(settings.CVL_PATH)
-    cvl_builder = CVLDatasetBuilder(cvl_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)
-    dataset_broker.register_dataset_builder(cvl_builder)
+    #rimes_loader = RIMESWordsDataloader(settings.RIMES_PATH)
+    #rimes_builder = RIMESDatasetBuilder(rimes_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)
+    #dataset_broker.register_dataset_builder(rimes_builder)
+
+    #cvl_loader = CVLLineDataloader(settings.CVL_PATH)
+    #cvl_builder = CVLDatasetBuilder(cvl_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)
+    #dataset_broker.register_dataset_builder(cvl_builder)
 
     #Register more datasets builders here
     
