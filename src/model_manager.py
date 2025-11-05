@@ -54,6 +54,11 @@ class ModelManager():
             filepath=settings.LAST_CHECKPOINT_PATH,
             save_best_only=False
         )
+        early_stopping_callback = keras.callbacks.EarlyStopping(
+            monitor = "val_CER",
+            patience = 10,
+            mode = "min"
+        )
 
         history = model.fit(
             x=self.dataset_broker.get_training_set(),
@@ -64,6 +69,7 @@ class ModelManager():
                 metrics_log_callback,
                 model_checkpoint_callback,
                 latest_checkpoint_callback,
+                early_stopping_callback
             ],
         )
     
