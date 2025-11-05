@@ -5,8 +5,8 @@ from datasets.dataloader import Dataloader
 from datasets.dataset_builder import DatasetBuilder
 
 class CVLDatasetBuilder(DatasetBuilder):
-    def __init__(self, dataloader:Dataloader):
-        super().__init__(dataloader)
+    def __init__(self, dataloader:Dataloader, train_split, val_split):
+        super().__init__(dataloader, train_split, val_split)
 
     def _load_tif(self, path):
         with Image.open(path.numpy().decode("utf-8")) as image:

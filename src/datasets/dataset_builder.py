@@ -7,16 +7,12 @@ from datasets.dataloader import Dataloader
 
 class DatasetBuilder(ABC):
 
-    def __init__(self, dataloader:Dataloader):
+    def __init__(self, dataloader:Dataloader, train_split, val_split):
         self.dataloader = dataloader
-        self.train_split_per = None
-        self.val_split_per = None
+        self.train_split_per = train_split
+        self.val_split_per = val_split
         self.samples, self.labels = dataloader.load_samples_tensor()
         self.total = len(self.samples)
-
-    def set_splits(self, train_split_per, val_split_per):
-        self.train_split_per = train_split_per
-        self.val_split_per = val_split_per
 
     @abstractmethod
     def get_training_set(self):

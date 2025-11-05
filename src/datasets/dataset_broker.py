@@ -38,9 +38,7 @@ class DatasetBroker(ABC):
         pass
 
 class DatasetBrokerImpl(DatasetBroker):
-    def __init__(self, train_split_per, val_split_per, img_height, img_width, batch_size, data_augmentation = True):
-        self.train_split = train_split_per
-        self.val_split = val_split_per
+    def __init__(self, img_height, img_width, batch_size, data_augmentation = True):
         self.img_height = img_height
         self.img_width = img_width
         self.batch_size = batch_size
@@ -64,7 +62,6 @@ class DatasetBrokerImpl(DatasetBroker):
         vocabulary = set()
 
         for ds_builder in self.dataset_builders:
-            ds_builder.set_splits(self.train_split, self.val_split)
             vocabulary = vocabulary.union(ds_builder.get_vocabulary())
 
             train_datasets.append(ds_builder.get_training_set())
@@ -122,9 +119,9 @@ class DatasetBrokerImpl(DatasetBroker):
     def get_datasets_info(self):
         buffer = StringIO()
         buffer.write(f"=== Split Percentajes === \n")
-        buffer.write(f"Train: {self.train_split: .2f}%\n")
-        buffer.write(f"Validation: {self.val_split: .2f}%\n")
-        buffer.write(f"Test: {1-self.val_split-self.train_split: .2f}%\n")
+        buffer.write(f"Train: {settings.TRAIN_SPLIT: .2f}%\n")
+        buffer.write(f"Validation: {settings.VAL_SPLIT: .2f}%\n")
+        buffer.write(f"Test: {1-settings.VAL_SPLIT-settings.TRAIN_SPLIT: .2f}%\n")
         
         buffer.write(f"=== Datasets === \n")
         

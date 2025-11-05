@@ -14,6 +14,7 @@ import summary_reader
 
 TRAIN = "train"
 TEST = "test"
+DS_INFO = "ds_info"
 
 def main():
     args = get_command_args()
@@ -30,6 +31,9 @@ def main():
         summary_reader.plot_summary()
         model_manager.qualitative_matrix(model_path)
         write_test_results(model_manager, model_path)
+    
+    elif args.mode == DS_INFO:
+        write_datasets_info(dataset_broker)
 
 def write_datasets_info(dataset_broker):
     dataset_info =  dataset_broker.get_datasets_info()
@@ -49,15 +53,13 @@ def write_test_results(model_manager, model_path):
 def get_command_args():
     parser = argparse.ArgumentParser(description="Training and evaluation of deep learning model.")
     
-    parser.add_argument("-m","--mode", required=True, choices=[TRAIN, TEST])
+    parser.add_argument("-m","--mode", required=True, choices=[TRAIN, TEST, DS_INFO])
     parser.add_argument("-l", "--load", required=False)
 
     return parser.parse_args()
 
 def configure_datasets():
     dataset_broker = DatasetBrokerImpl(
-        train_split_per=settings.TRAIN_SPLIT,
-        val_split_per=settings.VAL_SPLIT,
         img_height=settings.IMG_HEIGHT,
         img_width=settings.IMG_WIDTH,
         batch_size=settings.BATCH_SIZE,
@@ -65,15 +67,15 @@ def configure_datasets():
     )
 
     iam_loader = IAMLineDataloader(settings.IAM_PATH)
-    iam_builder = IAMDatasetBuilder(iam_loader)
+    iam_builder = IAMDatasetBuilder(iam_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)
     dataset_broker.register_dataset_builder(iam_builder)
 
     rimes_loader = RIMESWordsDataloader(settings.RIMES_PATH)
-    rimes_builder = RIMESDatasetBuilder(rimes_loader)
+    rimes_builder = RIMESDatasetBuilder(rimes_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)
     dataset_broker.register_dataset_builder(rimes_builder)
 
     cvl_loader = CVLLineDataloader(settings.CVL_PATH)
-    cvl_builder = CVLDatasetBuilder(cvl_loader)
+    cvl_builder = CVLDatasetBuilder(cvl_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)
     dataset_broker.register_dataset_builder(cvl_builder)
 
     #Register more datasets builders here

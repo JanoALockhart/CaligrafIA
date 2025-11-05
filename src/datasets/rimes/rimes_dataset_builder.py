@@ -5,8 +5,8 @@ from datasets.dataset_builder import DatasetBuilder
 from datasets.dataloader import Dataloader
 
 class RIMESDatasetBuilder(DatasetBuilder):
-    def __init__(self, dataloader:Dataloader, words_per_line = 5, space_between_words_px = 32):
-        super().__init__(dataloader)
+    def __init__(self, dataloader:Dataloader, train_split, val_split, words_per_line = 5, space_between_words_px = 32):
+        super().__init__(dataloader, train_split, val_split)
         self.words_per_line = words_per_line
         self.space_between_words_px = space_between_words_px
 

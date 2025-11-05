@@ -3,8 +3,8 @@ from datasets.dataloader import Dataloader
 from datasets.dataset_builder import DatasetBuilder
 
 class IAMDatasetBuilder(DatasetBuilder):
-    def __init__(self, dataloader:Dataloader):
-        super().__init__(dataloader)
+    def __init__(self, dataloader:Dataloader, train_split, val_split):
+        super().__init__(dataloader, train_split, val_split)
     
     def _load_image(self, img_path, label):
         img = tf.io.read_file(img_path)
