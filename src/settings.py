@@ -31,5 +31,3 @@ SAVED_MODELS_PATH = os.path.abspath(os.path.join(base_path, os.getenv("SAVED_MOD
 TRAINING_METRICS_FILE_PATH = os.path.abspath(os.path.join(base_path, os.getenv("TRAINING_METRICS_FILE_PATH")))
 TEST_METRICS_FILE_PATH = os.path.abspath(os.path.join(base_path, os.getenv("TEST_METRICS_FILE_PATH")))
 DATASETS_INFO_FILE_PATH = os.path.abspath(os.path.join(base_path, os.getenv("DATASETS_INFO_FILE_PATH")))
-MODEL_ARCHITECTURE_FILE_PATH = os.path.abspath(os.path.join(base_path, os.getenv("MODEL_ARCHITECTURE_FILE_PATH")))
-
