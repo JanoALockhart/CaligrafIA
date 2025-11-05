@@ -118,10 +118,6 @@ class DatasetBrokerImpl(DatasetBroker):
     
     def get_datasets_info(self):
         buffer = StringIO()
-        buffer.write(f"=== Split Percentajes === \n")
-        buffer.write(f"Train: {settings.TRAIN_SPLIT: .2f}%\n")
-        buffer.write(f"Validation: {settings.VAL_SPLIT: .2f}%\n")
-        buffer.write(f"Test: {1-settings.VAL_SPLIT-settings.TRAIN_SPLIT: .2f}%\n")
         
         buffer.write(f"=== Datasets === \n")
         
@@ -130,22 +126,31 @@ class DatasetBrokerImpl(DatasetBroker):
         total_test = 0
         for ds_builder in self.dataset_builders:
             buffer.write(f"--- {ds_builder.get_name()} --- \n")
+            train_split = ds_builder.get_train_split()*100
+            val_split = ds_builder.get_val_split()*100
+            test_split = ds_builder.get_test_split()*100
+
             train_size = ds_builder.get_training_set().cardinality()
             val_size = ds_builder.get_validation_set().cardinality()
             test_size = ds_builder.get_test_set().cardinality()
 
-            buffer.write(f"Train: {train_size} images\n")
-            buffer.write(f"Validation: {val_size} images \n")
-            buffer.write(f"Test: {test_size} images \n")
+            buffer.write(f"Train: {train_split: .2f}% / {train_size} images\n")
+            buffer.write(f"Validation: {val_split: .2f}% / {val_size} images \n")
+            buffer.write(f"Test: {test_split: .2f}% / {test_size} images \n")
 
             total_train += train_size
             total_val += val_size
             total_test += test_size
 
+        total_samples = total_train + total_val + total_test
+        total_train_split = total_train / total_samples * 100
+        total_val_split = total_val / total_samples * 100
+        total_test_split = total_test / total_samples * 100
+
         buffer.write(f"===TOTAL===\n")
-        buffer.write(f"Train: {total_train} images\n")
-        buffer.write(f"Validation: {total_val} images\n")
-        buffer.write(f"Test: {total_test} images\n")
+        buffer.write(f"Train: {total_train_split: .2f}% / {total_train} images\n")
+        buffer.write(f"Validation: {total_val_split: .2f}% / {total_val} images\n")
+        buffer.write(f"Test: {total_test_split: .2f}% / {total_test} images\n")
 
         return buffer.getvalue()
 

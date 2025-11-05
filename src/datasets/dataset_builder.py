@@ -49,3 +49,12 @@ class DatasetBuilder(ABC):
     @abstractmethod
     def get_name(self):
         return "NO_NAME"
+    
+    def get_train_split(self):
+        return self.train_split_per
+    
+    def get_val_split(self):
+        return self.val_split_per
+    
+    def get_test_split(self):
+        return 1-self.val_split_per-self.train_split_per
