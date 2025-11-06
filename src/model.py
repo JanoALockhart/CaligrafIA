@@ -1,6 +1,7 @@
 
 import keras
 from keras import layers
+import tensorflow as tf
 
 def build_model(input_shape, alphabet_length):
     input = keras.Input(shape=input_shape)
@@ -15,7 +16,7 @@ def build_model(input_shape, alphabet_length):
     x = layers.ReLU()(x)
     x = layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding="valid")(x)
     
-    
+
     x = layers.Conv2D(filters=128, kernel_size=3, padding="same")(x)
     x = layers.BatchNormalization()(x)
     x = layers.ReLU()(x)
@@ -31,8 +32,7 @@ def build_model(input_shape, alphabet_length):
     x = layers.ReLU()(x)
     x = layers.MaxPool2D(pool_size=(2, 1), strides=(2, 1), padding="valid")(x)
     
-    
-    x = layers.Reshape((64, 256))(x)
+    x = layers.Reshape((input_shape[1] // 4, 256))(x)
     
     x = layers.Bidirectional(layers.LSTM(256, return_sequences=True), merge_mode="concat")(x)
     x = layers.Bidirectional(layers.LSTM(256, return_sequences=True), merge_mode="concat")(x)

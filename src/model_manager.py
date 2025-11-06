@@ -56,7 +56,7 @@ class ModelManager():
         )
         early_stopping_callback = keras.callbacks.EarlyStopping(
             monitor = "val_CER",
-            patience = 10,
+            patience = 5,
             mode = "min"
         )
 
@@ -65,7 +65,7 @@ class ModelManager():
             epochs=settings.EPOCHS,
             validation_data=self.dataset_broker.get_validation_set(),
             callbacks=[
-                val_log_callback,
+                #val_log_callback,
                 metrics_log_callback,
                 model_checkpoint_callback,
                 latest_checkpoint_callback,
