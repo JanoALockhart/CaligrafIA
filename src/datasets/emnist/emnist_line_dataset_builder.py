@@ -3,7 +3,7 @@ from datasets.dataset_builder import DatasetBuilder
 from datasets.emnist.emnist_character_loader import EMNISTCharacterDataset
 
 class EMNISTLineDatasetBuilder(DatasetBuilder):
-    def __init__(self, dataloader:EMNISTCharacterDataset, letters_per_line = 18):
+    def __init__(self, dataloader:EMNISTCharacterDataset, letters_per_line = 9):
         self.dataloader = dataloader
         self.letters_per_line = letters_per_line
         self.space_width = 28
