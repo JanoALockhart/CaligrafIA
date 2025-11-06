@@ -152,6 +152,10 @@ class DatasetBrokerImpl(DatasetBroker):
         buffer.write(f"Validation: {total_val_split: .2f}% / {total_val} images\n")
         buffer.write(f"Test: {total_test_split: .2f}% / {total_test} images\n")
 
+        vocab = "".join(self.encoding_function.get_vocabulary())
+        buffer.write(f"===VOCABULARY===\n")
+        buffer.write(f"{vocab}")
+
         return buffer.getvalue()
 
     
