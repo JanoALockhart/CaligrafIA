@@ -56,7 +56,7 @@ class ModelManager():
         )
         early_stopping_callback = keras.callbacks.EarlyStopping(
             monitor = "val_CER",
-            patience = 5,
+            patience = 10,
             mode = "min"
         )
 
