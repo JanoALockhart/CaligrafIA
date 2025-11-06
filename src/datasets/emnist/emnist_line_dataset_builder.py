@@ -49,3 +49,12 @@ class EMNISTLineDatasetBuilder(DatasetBuilder):
 
     def get_name(self):
         return "EMNIST Lines"
+    
+    def get_train_split(self):
+        return self.dataloader.get_train_split()
+    
+    def get_val_split(self):
+        return self.dataloader.get_val_split()
+    
+    def get_test_split(self):
+        return 1 - self.get_val_split() - self.get_train_split()

@@ -10,12 +10,15 @@ class EMNISTCharacterDataset():
             with_info=True
         )
 
-        train_size = self.dataset.cardinality().numpy() * train_split
-        val_size = self.dataset.cardinality().numpy() * val_split
+        self.train_split_per = train_split
+        self.val_split_per = val_split
+
+        self.train_size = self.dataset.cardinality().numpy() * train_split
+        self.val_size = self.dataset.cardinality().numpy() * val_split
         
-        self.ds_train = self.dataset.take(train_size)
-        self.ds_val = self.dataset.skip(train_size).take(val_size)
-        self.ds_test = self.dataset.skip(train_size+val_size)
+        self.ds_train = self.dataset.take(self.train_size)
+        self.ds_val = self.dataset.skip(self.train_size).take(self.val_size)
+        self.ds_test = self.dataset.skip(self.train_size+self.val_size)
 
         self.characters = tf.constant(list("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"))
 
@@ -39,6 +42,12 @@ class EMNISTCharacterDataset():
     
     def get_name(self):
         return "EMNIST"
+
+    def get_train_split(self):
+        return self.train_split_per
+
+    def get_val_split(self):
+        return self.val_split_per
     
     def get_info(self):
         return self.info
