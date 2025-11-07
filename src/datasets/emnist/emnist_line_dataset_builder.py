@@ -58,6 +58,15 @@ class EMNISTLineDatasetBuilder(DatasetBuilder):
 
         return space_widths
 
+    def _synthesize_full_line(self, batch_img_char, batch_label_char):
+        batch_img_char = tf.image.convert_image_dtype(batch_img_char, tf.float32)
+        batch_img_char = 1 - batch_img_char
+        batch_img_char = tf.unstack(batch_img_char)
+        row_image = tf.concat(batch_img_char, axis=1)
+
+        row_label = tf.strings.reduce_join(batch_label_char)
+
+        return row_image, row_label
 
     def get_training_set(self):
         train_ds = self.dataloader.get_training_set()
@@ -67,13 +76,13 @@ class EMNISTLineDatasetBuilder(DatasetBuilder):
 
     def get_validation_set(self):
         val_ds = self.dataloader.get_validation_set()
-        val_ds = val_ds.batch(self.chars_per_line, drop_remainder=True).map(self._synthesize_random_line)
+        val_ds = val_ds.batch(self.chars_per_line, drop_remainder=True).map(self._synthesize_full_line)
 
         return val_ds
 
     def get_test_set(self):
         test_ds = self.dataloader.get_test_set()
-        test_ds = test_ds.batch(self.chars_per_line, drop_remainder=True).map(self._synthesize_random_line)
+        test_ds = test_ds.batch(self.chars_per_line, drop_remainder=True).map(self._synthesize_full_line)
 
         return test_ds
 
