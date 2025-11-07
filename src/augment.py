@@ -7,7 +7,6 @@ def augment():
         name = "lines_png",
         train_split = settings.TRAIN_SPLIT, 
         val_split=settings.VAL_SPLIT, 
-        augmented = False
     )
 
 

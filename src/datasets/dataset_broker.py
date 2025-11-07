@@ -3,7 +3,7 @@ from io import StringIO
 
 import tensorflow as tf
 from keras import layers
-from data_augmentation import apply_augmentations
+from tf_data_augmentation import apply_augmentations
 from datasets.dataset_builder import DatasetBuilder
 import settings
 

@@ -1,28 +1,17 @@
-import tensorflow as tf
 import numpy as np
 import cv2
 
-import settings
+def apply_all_techniques(image):
 
-@tf.py_function(Tout=tf.float32)
-def apply_augmentations(image):
-
-    if settings.DEBUG_MODE:
-        print("Before data aug:", image.shape)
-
-    image = image.numpy()
-    image = np.squeeze(image)
     image = random_gaussian_blur(image)
     image = random_dilate(image)
     image = random_erode(image)
     image = random_brightness(image)
     image = random_noise(image)
     image = random_invert(image)
-    image = np.expand_dims(image, axis=-1)
-    if settings.DEBUG_MODE:
-        print("After data aug image shape:", image.shape)
 
     return image
+
 
 def random_gaussian_blur(image, probability=0.25):
     if np.random.rand() < probability:
@@ -40,7 +29,7 @@ def random_invert(img):
         return img
 
 def invert(img):
-    return -img
+    return 1.0 - img
 
 def random_noise(img, probability = 0.25, max_noise_multiplier = 25):
     if np.random.rand() < probability:
