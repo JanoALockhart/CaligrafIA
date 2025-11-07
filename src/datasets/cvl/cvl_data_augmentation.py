@@ -15,11 +15,6 @@ def augment_CVL(
     dataloader = CVLLineDataloader(cvl_path)
     img_paths, labels = dataloader.load_samples_tensor()
 
-    #REMOVE THIS IS TO CUT IMAGES FOR TESTING
-    img_paths = img_paths[:10]
-    labels = labels[:10]
-    #
-
     total = len(labels)
     train_size = int(total * train_split)
     val_size = int(total * val_split)
