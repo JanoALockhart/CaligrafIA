@@ -67,6 +67,48 @@ class EMNISTLineDatasetBuilder(DatasetBuilder):
         row_label = tf.strings.reduce_join(batch_label_char)
 
         return row_image, row_label
+    
+    def _synthesize_fixed_char_space_line(self, batch_img_char, batch_label_char):
+        batch_img_char = tf.image.convert_image_dtype(batch_img_char, tf.float32)
+        batch_img_char = 1 - batch_img_char
+        height = tf.shape(batch_img_char)[1]
+        space = tf.ones([height, self.space_width, 1], tf.float32)
+        letters = tf.unstack(batch_img_char, axis=0)
+        line = []
+        for i, img in enumerate(letters):
+            line.append(img)
+            if i < len(letters) - 1:
+                line.append(space)
+        row_image = tf.concat(line, axis=1)
+        
+        row_label = tf.strings.reduce_join(batch_label_char, separator=' ')
+
+        return row_image, row_label
+    
+    def _synthesize_random_space_line(self, batch_img_char, batch_label_char):
+        # TODO: NOT WORKING
+        batch_img_char = tf.image.convert_image_dtype(batch_img_char, tf.float32)
+        batch_img_char = 1 - batch_img_char
+        height = tf.shape(batch_img_char)[1]
+        space_width = tf.random.uniform([], self.place_width // 2, self.place_width + self.place_width // 2, dtype=tf.int32)
+        space = tf.ones([height, space_width, 1], tf.float32)
+        space_prob = tf.random.uniform([], 0, 2, dtype=tf.int32)
+
+        letter_imgs = tf.unstack(batch_img_char, axis=0)
+        char_labels = tf.unstack(batch_label_char, axis=0)
+        new_line = []
+        new_label = []
+        for i, (img, char) in enumerate(zip(letter_imgs, char_labels)):
+            new_line.append(img)
+            new_label.append(char)
+            if i < len(letter_imgs) - 1 and space_prob>0:
+                new_line.append(space)
+                new_label.append(" ")
+        row_image = tf.concat(new_line, axis=1)
+
+        row_label = tf.strings.reduce_join(new_label)
+
+        return row_image, row_label
 
     def get_training_set(self):
         train_ds = self.dataloader.get_training_set()
