@@ -8,7 +8,6 @@ def apply_all_techniques(image):
     image = random_erode(image)
     image = random_brightness(image)
     image = random_noise(image)
-    image = random_invert(image)
 
     return image
 

@@ -41,7 +41,7 @@ def augment_CVL(
     TEST_FOLDER = f"/test"
     LABELS_FOLDER = f"/labels"
 
-    #create_folders(base_path, TRAIN_FOLDER, TRAIN_DATA_AUG_FOLDER, VAL_FOLDER, TEST_FOLDER, LABELS_FOLDER)
+    create_folders(base_path, TRAIN_FOLDER, TRAIN_DATA_AUG_FOLDER, VAL_FOLDER, TEST_FOLDER, LABELS_FOLDER)
 
     build_split_folder(train_paths, train_labels, base_path, TRAIN_FOLDER, f"{LABELS_FOLDER}/train.csv")
     build_split_folder(val_paths, val_labels, base_path, VAL_FOLDER, labels_file_path=f"{LABELS_FOLDER}/val.csv")

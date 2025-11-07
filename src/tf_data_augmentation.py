@@ -16,7 +16,6 @@ def apply_augmentations(image):
     image = da.random_erode(image)
     image = da.random_brightness(image)
     image = da.random_noise(image)
-    image = da.random_invert(image)
     image = np.expand_dims(image, axis=-1)
     if settings.DEBUG_MODE:
         print("After data aug image shape:", image.shape)
