@@ -7,17 +7,16 @@ class EMNISTLineDatasetBuilder(DatasetBuilder):
         self.dataloader = dataloader
         self.chars_per_line = chars_per_line
         self.place_width = 28
-        self.min_space_length = 4
-        self.space_probability = 0.5
+        self.space_probability = 0.25
 
-    def _synthesize_line(self, batch_img_char, batch_label_char):
-        row_image, row_label = tf.py_function(self._synthesize_line_py, [batch_img_char, batch_label_char], (tf.float32, tf.string))
+    def _synthesize_random_line(self, batch_img_char, batch_label_char):
+        row_image, row_label = tf.py_function(self._synthesize_random_line_py, [batch_img_char, batch_label_char], (tf.float32, tf.string))
         row_image.set_shape([None, None, 1])
         row_label.set_shape([])
 
         return row_image, row_label
 
-    def _synthesize_line_py(self, batch_img_char, batch_label_char):
+    def _synthesize_random_line_py(self, batch_img_char, batch_label_char):
         batch_img_char = tf.image.convert_image_dtype(batch_img_char, tf.float32)
         batch_img_char = 1 - batch_img_char
         height = tf.shape(batch_img_char)[1]
@@ -33,9 +32,7 @@ class EMNISTLineDatasetBuilder(DatasetBuilder):
                 width = spaces_template[i]
                 space = tf.ones([height, width, 1], tf.float32)
                 new_line.append(space)
-                
-                if width > self.min_space_length:
-                    new_label.append(tf.constant(' '))
+                new_label.append(tf.constant(' '))
             else:
                 img = batch_img_char[i]
                 new_line.append(img)
@@ -58,25 +55,25 @@ class EMNISTLineDatasetBuilder(DatasetBuilder):
         amount_spaces = tf.reduce_sum(mask)
         space_widths = space_length_percentaje * (self.place_width * amount_spaces)
         space_widths = tf.cast(space_widths, tf.int32)
-        
+
         return space_widths
 
 
     def get_training_set(self):
         train_ds = self.dataloader.get_training_set()
-        train_ds = train_ds.batch(self.chars_per_line, drop_remainder=True).map(self._synthesize_line)
+        train_ds = train_ds.batch(self.chars_per_line, drop_remainder=True).map(self._synthesize_random_line)
 
         return train_ds
 
     def get_validation_set(self):
         val_ds = self.dataloader.get_validation_set()
-        val_ds = val_ds.batch(self.chars_per_line, drop_remainder=True).map(self._synthesize_line)
+        val_ds = val_ds.batch(self.chars_per_line, drop_remainder=True).map(self._synthesize_random_line)
 
         return val_ds
 
     def get_test_set(self):
         test_ds = self.dataloader.get_test_set()
-        test_ds = test_ds.batch(self.chars_per_line, drop_remainder=True).map(self._synthesize_line)
+        test_ds = test_ds.batch(self.chars_per_line, drop_remainder=True).map(self._synthesize_random_line)
 
         return test_ds
 
