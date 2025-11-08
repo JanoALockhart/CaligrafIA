@@ -10,11 +10,6 @@ def augment_RIMES(rimes_path, name="lines_png", train_split = 0.6, val_split = 0
     dataloader = RIMESWordsDataloader(rimes_path)
     word_paths, word_labels = dataloader.load_samples_tensor()
 
-    # REMOVE
-    word_paths = word_paths[:51]
-    word_labels = word_labels[:51]
-    # REMOVE
-
     total = len(word_labels)
     
     train_size = int(total * train_split)
