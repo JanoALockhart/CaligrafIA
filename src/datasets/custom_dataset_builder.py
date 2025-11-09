@@ -79,7 +79,8 @@ class CustomAugmentedDatasetBuilder(DatasetBuilder):
         labels = df["label"].tolist()
         labels = list(map(str, labels))
 
-        dataset = tf.data.Dataset.from_tensor_slices((paths, labels)).map(self._add_base_path).map(self._load_image)
+        dataset = tf.data.Dataset.from_tensor_slices((paths, labels))
+        dataset = dataset.shuffle(dataset.cardinality()).map(self._add_base_path).map(self._load_image)
         return dataset
     
     def get_validation_set(self):
