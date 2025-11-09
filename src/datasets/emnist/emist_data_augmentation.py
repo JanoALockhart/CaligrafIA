@@ -6,7 +6,7 @@ from datasets.emnist.emnist_character_loader import EMNISTCharacterDataset
 from datasets.emnist.emnist_line_dataset_builder import EMNISTLineDatasetBuilder
 from data_augmentation import DatasetAugmentator
 
-class EMNISTDataAugmentator(DatasetAugmentator):
+class EMNISTDatasetAugmentator(DatasetAugmentator):
     def __init__(self, dataset_path, subfolder_name, train_split, val_split, chars_per_line = 18):
         super().__init__(dataset_path, subfolder_name, train_split, val_split)
         self.chars_per_line = chars_per_line

@@ -1,7 +1,7 @@
 
 from datasets.cvl.cvl_data_augmentation import augment_CVL
 from datasets.rimes.rimes_data_augmentation import augment_RIMES
-from datasets.emnist.emist_data_augmentation import EMNISTDataAugmentator
+from datasets.emnist.emist_data_augmentation import EMNISTDatasetAugmentator
 import settings
 
 def augment_cvl():
@@ -22,7 +22,7 @@ def augment_rimes():
 
 
 def augment_datasets():
-    emnist_aumentator = EMNISTDataAugmentator(
+    emnist_aumentator = EMNISTDatasetAugmentator(
         dataset_path=settings.EMNIST_PATH,
         subfolder_name="lines_png",
         train_split=settings.TRAIN_SPLIT,
