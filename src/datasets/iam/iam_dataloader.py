@@ -19,7 +19,7 @@ class IAMLineDataloader(Dataloader):
                 img_name = line_split[0]
                 img_path = self._parse_img_path(img_name)
                 samples.append(img_path)
-                label = line_split[8].replace('|', ' ')
+                label = "".join(line_split[8:]).replace('|', ' ') # Some labels already have whitespaces instead of "|"
                 labels.append(label)
                 self.vocabulary.update(label)
 

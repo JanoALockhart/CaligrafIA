@@ -30,9 +30,7 @@ class IAMDatasetAugmentator(DatasetAugmentator):
 
     def build_split_folder(self, ds_split, dest_folder, dest_labels_file):
         paths, labels = ds_split
-        #REMOVE
-        paths = paths[:10]
-        labels = labels[:10]
+
         relative_paths = []
         for (img_path, label) in zip(paths, labels):
             file_name = self.get_file_name(img_path)
