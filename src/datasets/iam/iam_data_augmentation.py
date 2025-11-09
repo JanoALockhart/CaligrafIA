@@ -1,12 +1,9 @@
-import os
 from PIL import Image
-import numpy as np
 import pandas as pd
-from datasets.cvl.cvl_dataloader import CVLLineDataloader
 from data_augmentation import DatasetAugmentator
 
 # TODO: test
-class CVLDatasetAugmentator(DatasetAugmentator):
+class IAMDatasetAugmentator(DatasetAugmentator):
     def __init__(self, dataset_path, subfolder_name, train_split, val_split, dataloader):
         super().__init__(dataset_path, subfolder_name, train_split, val_split)
         self.dataloader = dataloader
@@ -33,6 +30,9 @@ class CVLDatasetAugmentator(DatasetAugmentator):
 
     def build_split_folder(self, ds_split, dest_folder, dest_labels_file):
         paths, labels = ds_split
+        #REMOVE
+        paths = paths[:10]
+        labels = labels[:10]
         relative_paths = []
         for (img_path, label) in zip(paths, labels):
             file_name = self.get_file_name(img_path)

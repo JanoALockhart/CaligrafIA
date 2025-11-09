@@ -4,6 +4,7 @@ from PIL import Image
 from datasets.dataset_builder import DatasetBuilder
 from datasets.dataloader import Dataloader
 
+# TODO: test
 class RIMESDatasetBuilder(DatasetBuilder):
     def __init__(self, dataloader:Dataloader, train_split, val_split, words_per_line = 5, space_between_words_px = 32):
         super().__init__(dataloader, train_split, val_split)

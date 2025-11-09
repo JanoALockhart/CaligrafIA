@@ -1,5 +1,7 @@
 from datasets.cvl.cvl_data_augmentation import CVLDatasetAugmentator
 from datasets.cvl.cvl_dataloader import CVLLineDataloader
+from datasets.iam.iam_data_augmentation import IAMDatasetAugmentator
+from datasets.iam.iam_dataloader import IAMLineDataloader
 from datasets.rimes.rimes_data_augmentation import RIMESDatasetAugmentator
 from datasets.emnist.emist_data_augmentation import EMNISTDatasetAugmentator
 from datasets.rimes.rimes_dataloader import RIMESWordsDataloader
@@ -29,9 +31,18 @@ def augment_datasets():
         dataloader=CVLLineDataloader(settings.CVL_PATH)
     )
 
-    emnist_aumentator.augment_dataset()
+    iam_augmentator = IAMDatasetAugmentator(
+        dataset_path=settings.IAM_PATH,
+        subfolder_name="lines_png",
+        train_split=settings.TRAIN_SPLIT,
+        val_split=settings.VAL_SPLIT,
+        dataloader=IAMLineDataloader(settings.IAM_PATH)
+    )
+
+    #emnist_aumentator.augment_dataset()
     #rimes_augmentator.augment_dataset()
     #cvl_augmentator.augment_dataset()
+    iam_augmentator.augment_dataset()
 
 
 
