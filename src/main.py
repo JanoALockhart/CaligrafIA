@@ -70,7 +70,7 @@ def configure_datasets():
 
     emnist_char_loader = EMNISTCharacterDataset(settings.TRAIN_SPLIT, settings.VAL_SPLIT)
     emnist_line_builder = EMNISTLineDatasetBuilder(emnist_char_loader)
-    dataset_broker.register_dataset_builder(emnist_line_builder)
+    dataset_broker.register_training_dataset_builder(emnist_line_builder)
 
     #iam_loader = IAMLineDataloader(settings.IAM_PATH)
     #iam_builder = IAMDatasetBuilder(iam_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)

@@ -10,7 +10,11 @@ import settings
 class DatasetBroker(ABC):
 
     @abstractmethod
-    def register_dataset_builder(self, dataset):
+    def register_training_dataset_builder(self, dataset):
+        pass
+
+    @abstractmethod
+    def register_val_test_dataset_builders(self, dataset):
         pass
 
     @abstractmethod
@@ -43,7 +47,8 @@ class DatasetBrokerImpl(DatasetBroker):
         self.img_width = img_width
         self.batch_size = batch_size
         self.data_augmentation = data_augmentation
-        self.dataset_builders:list[DatasetBuilder] = []
+        self.train_dataset_builders:list[DatasetBuilder] = []
+        self.val_test_dataset_builders:list[DatasetBuilder] = []
 
         self.train_ds = None
         self.val_ds = None
@@ -52,8 +57,11 @@ class DatasetBrokerImpl(DatasetBroker):
         self.encoding_function = None
         self.decoding_function = None
 
-    def register_dataset_builder(self, dataset_builder:DatasetBuilder):
-        self.dataset_builders.append(dataset_builder)
+    def register_training_dataset_builder(self, dataset_builder:DatasetBuilder):
+        self.train_dataset_builders.append(dataset_builder)
+
+    def register_val_test_dataset_builders(self, dataset):
+        self.val_test_dataset_builders.append(dataset)
 
     def sample_datasets(self):
         train_datasets = []
@@ -61,14 +69,15 @@ class DatasetBrokerImpl(DatasetBroker):
         test_datasets = []
         vocabulary = set()
 
-        for ds_builder in self.dataset_builders:
+        for ds_builder in self.train_dataset_builders:
             vocabulary = vocabulary.union(ds_builder.get_vocabulary())
-
             train_datasets.append(ds_builder.get_training_set())
-            val_datasets.append(ds_builder.get_validation_set())
-            test_datasets.append(ds_builder.get_test_set())
 
         vocabulary = sorted(vocabulary)
+
+        for ds_builder in self.val_test_dataset_builders:
+            val_datasets.append(ds_builder.get_validation_set())
+            test_datasets.append(ds_builder.get_test_set())
         
         self.encoding_function = layers.StringLookup(vocabulary=vocabulary, oov_token="[UNK]")
         self.decoding_function = layers.StringLookup(vocabulary=vocabulary, oov_token="[UNK]", invert=True)
@@ -124,7 +133,7 @@ class DatasetBrokerImpl(DatasetBroker):
         total_train = 0
         total_val = 0
         total_test = 0
-        for ds_builder in self.dataset_builders:
+        for ds_builder in self.train_dataset_builders:
             buffer.write(f"--- {ds_builder.get_name()} --- \n")
             train_split = ds_builder.get_train_split()*100
             val_split = ds_builder.get_val_split()*100
