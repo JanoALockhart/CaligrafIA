@@ -2,8 +2,8 @@ import os
 from PIL import Image
 import numpy as np
 import pandas as pd
+from data_augmentation import build_data_aug_folder
 from datasets.rimes.rimes_dataloader import RIMESWordsDataloader
-import data_augmentation as da
 
 
 def augment_RIMES(rimes_path, name="lines_png", train_split = 0.6, val_split = 0.2):
@@ -43,36 +43,6 @@ def augment_RIMES(rimes_path, name="lines_png", train_split = 0.6, val_split = 0
     data_aug_labels_file = f"{LABELS_FOLDER}/train_da.csv"
     build_split_folder(train_word_paths, train_word_labels, base_path, TRAIN_DATA_AUG_FOLDER, data_aug_labels_file)
     build_data_aug_folder(base_path, train_labels_file, TRAIN_DATA_AUG_FOLDER, data_aug_labels_file)
-
-def build_data_aug_folder(base_path, source_labels_file, dest_folder, dest_labels_file):
-    df = pd.read_csv(base_path + source_labels_file)
-
-    new_image_paths = []
-    new_labels = []
-
-    for row in df.itertuples(index=False):
-
-        img_path = base_path + row.path
-        with Image.open(img_path) as img:
-            img = img.convert("L")
-
-            for i in range(5):
-                img_aug = np.array(img, dtype=np.float32) / 255.0
-                img_aug = da.apply_all_techniques(img_aug)
-                img_aug = np.clip(img_aug * 255, 0, 255).astype(np.uint8)
-                
-                img_aug = Image.fromarray(img_aug)
-                file_name = row.path.split("/")[-1].split(".")[0]
-                relative_path_img_aug = f"{dest_folder}/{file_name}-{i}.png"
-                img_aug.save(f"{base_path}{relative_path_img_aug}", format="PNG")
-
-                new_image_paths.append(relative_path_img_aug)
-                new_labels.append(row.label)
-
-                print(relative_path_img_aug, row.label)
-
-    dest_df = pd.DataFrame({"path":new_image_paths, "label":new_labels})
-    dest_df.to_csv(f"{base_path}{dest_labels_file}", mode="a", header=False, index=False)
 
 def build_split_folder(words_paths, words_labels, base_path, image_folder, labels_file):
     words_per_line = 5
