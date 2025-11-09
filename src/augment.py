@@ -20,20 +20,19 @@ def augment_rimes():
         val_split=settings.VAL_SPLIT
     )
 
-def augment_EMNIST():
-    augmentator = EMNISTDataAugmentator(
+
+def augment_datasets():
+    emnist_aumentator = EMNISTDataAugmentator(
         dataset_path=settings.EMNIST_PATH,
         subfolder_name="lines_png",
         train_split=settings.TRAIN_SPLIT,
         val_split=settings.VAL_SPLIT
     )
-    augmentator.augment_dataset()
 
 
+    emnist_aumentator.augment_dataset()
 
 if __name__ == "__main__":
-    #augment_cvl()
-    #augment_rimes()
-    augment_EMNIST()
+    augment_datasets()
 
 
