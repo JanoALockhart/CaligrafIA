@@ -7,6 +7,7 @@ base_path = os.path.dirname(__file__)
 IAM_PATH = os.getenv("IAM_PATH")
 CVL_PATH = os.getenv("CVL_PATH")
 RIMES_PATH = os.getenv("RIMES_PATH")
+EMNIST_PATH = os.getenv("EMNIST_PATH")
 
 DEBUG_MODE = bool(os.getenv("DEBUG_MODE"))
 
