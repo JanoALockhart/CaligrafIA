@@ -77,6 +77,7 @@ class CustomAugmentedDatasetBuilder(DatasetBuilder):
             df = pd.read_csv(f"{self.base_path}{self.TRAIN_LABELS_FILE}")
         paths = df["path"].tolist()
         labels = df["label"].tolist()
+        labels = list(map(str, labels))
 
         dataset = tf.data.Dataset.from_tensor_slices((paths, labels)).map(self._add_base_path).map(self._load_image)
         return dataset
