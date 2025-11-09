@@ -21,8 +21,6 @@ class EMNISTDatasetAugmentator(DatasetAugmentator):
         return train_ds, val_ds, test_ds
 
     def build_split_folder(self, ds_split, dest_folder, dest_labels_file):
-        ds_split = ds_split.take(5) #REMOVE
-    
         new_img_paths = []
         new_labels = []
         for i, (line, label) in enumerate(ds_split):
