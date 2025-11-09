@@ -3,7 +3,6 @@ from PIL import Image
 import numpy as np
 import pandas as pd
 from data_augmentation import DatasetAugmentator
-from datasets.rimes.rimes_dataloader import RIMESWordsDataloader
 
 class RIMESDatasetAugmentator(DatasetAugmentator):
     def __init__(self, dataset_path, subfolder_name, train_split, val_split, dataloader):
