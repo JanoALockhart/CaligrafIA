@@ -1,17 +1,19 @@
 import os
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 import pandas as pd
 from datasets.emnist.emnist_character_loader import EMNISTCharacterDataset
 from datasets.emnist.emnist_line_dataset_builder import EMNISTLineDatasetBuilder
 from data_augmentation import DatasetAugmentator
 
 class EMNISTDatasetAugmentator(DatasetAugmentator):
-    def __init__(self, dataset_path, subfolder_name, train_split, val_split, chars_per_line = 18):
+    def __init__(self, dataset_path, subfolder_name, train_split, val_split, img_shape = (512, 32), chars_per_line = 18):
         super().__init__(dataset_path, subfolder_name, train_split, val_split)
         self.chars_per_line = chars_per_line
         self.loader = EMNISTCharacterDataset(train_split, val_split)
         self.dataset = EMNISTLineDatasetBuilder(self.loader)
+
+        self.img_shape = img_shape
     
     def split_dataset(self):
         train_ds = self.loader.get_training_set().batch(self.chars_per_line, drop_remainder=True).map(self.dataset._synthesize_random_line)
@@ -31,6 +33,8 @@ class EMNISTDatasetAugmentator(DatasetAugmentator):
             img = np.squeeze(line.numpy())
             img = np.clip(img * 255.0, 0, 255).astype(np.uint8)
             img = Image.fromarray(img)
+            x_freedom = np.random.random()
+            img = ImageOps.pad(img, self.img_shape, color=(255, 255, 255), centering=(x_freedom, 0.5))
             img.save(f"{self.base_path}{relative_path}")
 
             new_img_paths.append(relative_path)

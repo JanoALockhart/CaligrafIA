@@ -1,13 +1,15 @@
 import os
-from PIL import Image
+from PIL import Image, ImageOps
 import numpy as np
 import pandas as pd
 from data_augmentation import DatasetAugmentator
 
 class RIMESDatasetAugmentator(DatasetAugmentator):
-    def __init__(self, dataset_path, subfolder_name, train_split, val_split, dataloader):
+    def __init__(self, dataset_path, subfolder_name, train_split, val_split, dataloader, img_shape = (512, 32)):
         super().__init__(dataset_path, subfolder_name, train_split, val_split)
         self.dataloader = dataloader
+
+        self.img_shape = img_shape
 
     def split_dataset(self):
         word_paths, word_labels = self.dataloader.load_samples_tensor()
@@ -77,6 +79,8 @@ class RIMESDatasetAugmentator(DatasetAugmentator):
         
         sentence_img = np.clip(sentence_img, 0, 255).astype(np.uint8)
         img_to_save = Image.fromarray(sentence_img)
+        x_freedom = np.random.random()
+        img = ImageOps.pad(img, self.img_shape, color=(255, 255, 255), centering=(x_freedom, 0.5))
         img_to_save.save(image_path, format="PNG")
 
 
