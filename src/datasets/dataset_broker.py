@@ -131,23 +131,30 @@ class DatasetBrokerImpl(DatasetBroker):
         buffer.write(f"=== Datasets === \n")
         
         total_train = 0
+
+        for ds_builder in self.train_dataset_builders:
+            buffer.write(f"--- {ds_builder.get_name()} TRAIN --- \n")
+            train_split = ds_builder.get_train_split()*100
+            
+            train_size = ds_builder.get_training_set().cardinality()
+
+            buffer.write(f"Train: {train_split: .2f}% / {train_size} images\n")
+            
+            total_train += train_size
+            
         total_val = 0
         total_test = 0
-        for ds_builder in self.train_dataset_builders:
-            buffer.write(f"--- {ds_builder.get_name()} --- \n")
-            train_split = ds_builder.get_train_split()*100
+        for ds_builder in self.val_test_dataset_builders:
+            buffer.write(f"--- {ds_builder.get_name()} VAL and TEST --- \n")
             val_split = ds_builder.get_val_split()*100
             test_split = ds_builder.get_test_split()*100
 
-            train_size = ds_builder.get_training_set().cardinality()
             val_size = ds_builder.get_validation_set().cardinality()
             test_size = ds_builder.get_test_set().cardinality()
 
-            buffer.write(f"Train: {train_split: .2f}% / {train_size} images\n")
             buffer.write(f"Validation: {val_split: .2f}% / {val_size} images \n")
             buffer.write(f"Test: {test_split: .2f}% / {test_size} images \n")
 
-            total_train += train_size
             total_val += val_size
             total_test += test_size
 
