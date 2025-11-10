@@ -38,7 +38,7 @@ class RIMESDatasetAugmentator(DatasetAugmentator):
         words_per_line = 5
         grouped_words = [words_paths[i:i+words_per_line] for i in range(0, len(words_paths), words_per_line)]
         grouped_labels = [words_labels[i:i+words_per_line] for i in range(0, len(words_labels), words_per_line)]
-        
+
         new_img_paths = []
         new_labels = []
         for (words, labels) in zip(grouped_words, grouped_labels):
@@ -49,7 +49,7 @@ class RIMESDatasetAugmentator(DatasetAugmentator):
             self._save_phrase_image(words, image_path)
             
             phrase_label = " ".join(labels)
-            print(image_path, phrase_label)
+            print(relative_path, phrase_label)
 
             new_labels.append(phrase_label)
             new_img_paths.append(relative_path)
@@ -80,7 +80,7 @@ class RIMESDatasetAugmentator(DatasetAugmentator):
         sentence_img = np.clip(sentence_img, 0, 255).astype(np.uint8)
         img_to_save = Image.fromarray(sentence_img)
         x_freedom = np.random.random()
-        img = ImageOps.pad(img, self.img_shape, color=(255, 255, 255), centering=(x_freedom, 0.5))
+        img_to_save = ImageOps.pad(img_to_save, self.img_shape, color="#fff", centering=(x_freedom, 0.5))
         img_to_save.save(image_path, format="PNG")
 
 

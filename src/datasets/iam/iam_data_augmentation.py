@@ -45,7 +45,7 @@ class IAMDatasetAugmentator(DatasetAugmentator):
             with Image.open(img_path) as img:
                 img = img.convert("L")
                 x_freedom = np.random.random()
-                img = ImageOps.pad(img, self.img_shape, color=(255, 255, 255), centering=(x_freedom, 0.5))
+                img = ImageOps.pad(img, self.img_shape, color="#fff", centering=(x_freedom, 0.5))
                 img.save(f"{self.base_path}{file_name_png}", format="PNG")
 
         df = pd.DataFrame({"path":relative_paths, "label":labels})

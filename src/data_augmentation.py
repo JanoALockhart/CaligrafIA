@@ -7,6 +7,13 @@ import cv2
 import data_augmentation as da
 import pandas as pd
 
+DATA_AUG_OPTIONS = [
+    lambda img: random_gaussian_blur(img, 1),
+    lambda img: erode(img),
+    lambda img: apply_all_techniques(img),
+    lambda img: random_brightness(img, 1),
+    lambda img: random_noise(img, 1)
+]
 
 def apply_all_techniques(image):
 
@@ -119,7 +126,6 @@ class DatasetAugmentator(ABC):
         self.build_split_folder(val_ds, self.VALIDATION_FOLDER, self.VAL_LABELS_FILE)
         self.build_split_folder(test_ds, self.TEST_FOLDER, self.TEST_LABELS_FILE)
 
-        self.build_split_folder(train_ds, self.DATA_AUG_FOLDER, self.DATA_AUG_LABELS_FILE)
         self.build_data_aug_folder(self.TRAIN_LABELS_FILE, self.DATA_AUG_FOLDER, self.DATA_AUG_LABELS_FILE)
 
     @abstractmethod
@@ -142,14 +148,16 @@ class DatasetAugmentator(ABC):
             img_path = self.base_path + row.path
             with Image.open(img_path) as img:
                 img = img.convert("L")
+                file_name = row.path.split("/")[-1].split(".")[0]
+                img.save(f"{self.base_path}{dest_folder}/{file_name}.png", format="PNG")
 
-                for i in range(5):
+                for i, augmentation_lambda in enumerate(DATA_AUG_OPTIONS):
                     img_aug = np.array(img, dtype=np.float32) / 255.0
-                    img_aug = da.apply_all_techniques(img_aug)
+                    img_aug = augmentation_lambda(img_aug)
                     img_aug = np.clip(img_aug * 255, 0, 255).astype(np.uint8)
 
                     img_aug = Image.fromarray(img_aug)
-                    file_name = row.path.split("/")[-1].split(".")[0]
+                    
                     relative_path_img_aug = f"{dest_folder}/{file_name}-{i}.png"
                     img_aug.save(f"{self.base_path}{relative_path_img_aug}", format="PNG")
 

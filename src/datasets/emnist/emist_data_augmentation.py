@@ -34,7 +34,7 @@ class EMNISTDatasetAugmentator(DatasetAugmentator):
             img = np.clip(img * 255.0, 0, 255).astype(np.uint8)
             img = Image.fromarray(img)
             x_freedom = np.random.random()
-            img = ImageOps.pad(img, self.img_shape, color=(255, 255, 255), centering=(x_freedom, 0.5))
+            img = ImageOps.pad(img, self.img_shape, color="#fff", centering=(x_freedom, 0.5))
             img.save(f"{self.base_path}{relative_path}")
 
             new_img_paths.append(relative_path)

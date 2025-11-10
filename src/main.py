@@ -60,7 +60,7 @@ def get_command_args():
 
     return parser.parse_args()
 
-def configure_datasets():
+def configure_datasets(): #TODO: use the new dataaugmented datasets
     dataset_broker = DatasetBrokerImpl(
         img_height=settings.IMG_HEIGHT,
         img_width=settings.IMG_WIDTH,
