@@ -12,7 +12,8 @@ def augment_datasets():
         dataset_path=settings.EMNIST_PATH,
         subfolder_name="lines_png",
         train_split=settings.TRAIN_SPLIT,
-        val_split=settings.VAL_SPLIT
+        val_split=settings.VAL_SPLIT,
+        img_shape=(settings.IMG_WIDTH, settings.IMG_HEIGHT)
     )
 
     rimes_augmentator = RIMESDatasetAugmentator(
@@ -20,7 +21,8 @@ def augment_datasets():
         subfolder_name="lines_png",
         train_split=settings.TRAIN_SPLIT,
         val_split=settings.VAL_SPLIT,
-        dataloader = RIMESWordsDataloader(settings.RIMES_PATH)
+        dataloader = RIMESWordsDataloader(settings.RIMES_PATH),
+        img_shape=(settings.IMG_WIDTH, settings.IMG_HEIGHT)
     )
 
     cvl_augmentator = CVLDatasetAugmentator(
@@ -28,7 +30,8 @@ def augment_datasets():
         subfolder_name="lines_png",
         train_split=settings.TRAIN_SPLIT,
         val_split=settings.VAL_SPLIT,
-        dataloader=CVLLineDataloader(settings.CVL_PATH)
+        dataloader=CVLLineDataloader(settings.CVL_PATH),
+        img_shape=(settings.IMG_WIDTH, settings.IMG_HEIGHT)
     )
 
     iam_augmentator = IAMDatasetAugmentator(
@@ -36,12 +39,13 @@ def augment_datasets():
         subfolder_name="lines_png",
         train_split=settings.TRAIN_SPLIT,
         val_split=settings.VAL_SPLIT,
-        dataloader=IAMLineDataloader(settings.IAM_PATH)
+        dataloader=IAMLineDataloader(settings.IAM_PATH),
+        img_shape=(settings.IMG_WIDTH, settings.IMG_HEIGHT)
     )
 
-    #emnist_aumentator.augment_dataset()
-    #rimes_augmentator.augment_dataset()
-    #cvl_augmentator.augment_dataset()
+    emnist_aumentator.augment_dataset()
+    rimes_augmentator.augment_dataset()
+    cvl_augmentator.augment_dataset()
     iam_augmentator.augment_dataset()
 
 
