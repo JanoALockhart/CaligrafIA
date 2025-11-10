@@ -3,7 +3,7 @@ import pandas as pd
 from datasets.dataset_builder import DatasetBuilder
 
 
-class CustomAugmentedDatasetBuilder(DatasetBuilder):
+class PreprocessedDatasetBuilder(DatasetBuilder):
     def __init__(self, dataset_path, subfolder_name = "lines_png", data_augmentation = False):
         self.dataset_path = dataset_path
         self.base_path = f"{dataset_path}/{subfolder_name}"

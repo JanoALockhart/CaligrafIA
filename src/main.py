@@ -1,7 +1,7 @@
 import argparse
 import logging
 from pathlib import Path
-from datasets.custom_dataset_builder import CustomAugmentedDatasetBuilder
+from datasets.custom_dataset_builder import PreprocessedDatasetBuilder
 from datasets.cvl.cvl_dataloader import CVLLineDataloader
 from datasets.cvl.cvl_dataset_builder import CVLDatasetBuilder
 from datasets.dataset_broker import DatasetBrokerImpl
@@ -69,17 +69,17 @@ def configure_datasets():
         data_augmentation=False # Keep false with the preprocessed datasets
     )
 
-    emnist_builder = CustomAugmentedDatasetBuilder(settings.EMNIST_PATH, data_augmentation=False)
+    emnist_builder = PreprocessedDatasetBuilder(settings.EMNIST_PATH, data_augmentation=False)
     dataset_broker.register_training_dataset_builder(emnist_builder)
     dataset_broker.register_val_test_dataset_builders(emnist_builder)
 
-    iam_builder = CustomAugmentedDatasetBuilder(settings.IAM_PATH, data_augmentation=False)
+    iam_builder = PreprocessedDatasetBuilder(settings.IAM_PATH, data_augmentation=False)
     dataset_broker.register_training_dataset_builder(iam_builder)
 
-    cvl_builder = CustomAugmentedDatasetBuilder(settings.CVL_PATH, data_augmentation=False)
+    cvl_builder = PreprocessedDatasetBuilder(settings.CVL_PATH, data_augmentation=False)
     dataset_broker.register_training_dataset_builder(cvl_builder)
 
-    rimes_builder = CustomAugmentedDatasetBuilder(settings.RIMES_PATH, data_augmentation=False)
+    rimes_builder = PreprocessedDatasetBuilder(settings.RIMES_PATH, data_augmentation=False)
     dataset_broker.register_training_dataset_builder(rimes_builder)
 
     #Register more datasets builders here
