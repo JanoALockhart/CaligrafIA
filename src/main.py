@@ -1,6 +1,7 @@
 import argparse
 import logging
 from pathlib import Path
+from datasets.custom_dataset_builder import CustomAugmentedDatasetBuilder
 from datasets.cvl.cvl_dataloader import CVLLineDataloader
 from datasets.cvl.cvl_dataset_builder import CVLDatasetBuilder
 from datasets.dataset_broker import DatasetBrokerImpl
@@ -60,29 +61,26 @@ def get_command_args():
 
     return parser.parse_args()
 
-def configure_datasets(): #TODO: use the new dataaugmented datasets
+def configure_datasets():
     dataset_broker = DatasetBrokerImpl(
         img_height=settings.IMG_HEIGHT,
         img_width=settings.IMG_WIDTH,
         batch_size=settings.BATCH_SIZE,
-        data_augmentation=False
+        data_augmentation=False # Keep false with the preprocessed datasets
     )
 
-    emnist_char_loader = EMNISTCharacterDataset(settings.TRAIN_SPLIT, settings.VAL_SPLIT)
-    emnist_line_builder = EMNISTLineDatasetBuilder(emnist_char_loader)
-    dataset_broker.register_training_dataset_builder(emnist_line_builder)
+    emnist_builder = CustomAugmentedDatasetBuilder(settings.EMNIST_PATH, data_augmentation=False)
+    dataset_broker.register_training_dataset_builder(emnist_builder)
+    dataset_broker.register_val_test_dataset_builders(emnist_builder)
 
-    #iam_loader = IAMLineDataloader(settings.IAM_PATH)
-    #iam_builder = IAMDatasetBuilder(iam_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)
-    #dataset_broker.register_dataset_builder(iam_builder)
+    iam_builder = CustomAugmentedDatasetBuilder(settings.IAM_PATH, data_augmentation=False)
+    dataset_broker.register_training_dataset_builder(iam_builder)
 
-    #rimes_loader = RIMESWordsDataloader(settings.RIMES_PATH)
-    #rimes_builder = RIMESDatasetBuilder(rimes_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)
-    #dataset_broker.register_dataset_builder(rimes_builder)
+    cvl_builder = CustomAugmentedDatasetBuilder(settings.CVL_PATH, data_augmentation=False)
+    dataset_broker.register_training_dataset_builder(cvl_builder)
 
-    #cvl_loader = CVLLineDataloader(settings.CVL_PATH)
-    #cvl_builder = CVLDatasetBuilder(cvl_loader, settings.TRAIN_SPLIT, settings.VAL_SPLIT)
-    #dataset_broker.register_dataset_builder(cvl_builder)
+    rimes_builder = CustomAugmentedDatasetBuilder(settings.RIMES_PATH, data_augmentation=False)
+    dataset_broker.register_training_dataset_builder(rimes_builder)
 
     #Register more datasets builders here
     
