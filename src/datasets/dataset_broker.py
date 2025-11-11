@@ -73,12 +73,13 @@ class DatasetBrokerImpl(DatasetBroker):
             vocabulary = vocabulary.union(ds_builder.get_vocabulary())
             train_datasets.append(ds_builder.get_training_set())
 
-        vocabulary = sorted(vocabulary)
-
         for ds_builder in self.val_test_dataset_builders:
+            vocabulary = vocabulary.union(ds_builder.get_vocabulary())
             val_datasets.append(ds_builder.get_validation_set())
             test_datasets.append(ds_builder.get_test_set())
         
+        vocabulary = sorted(vocabulary)
+
         self.encoding_function = layers.StringLookup(vocabulary=vocabulary, oov_token="[UNK]")
         self.decoding_function = layers.StringLookup(vocabulary=vocabulary, oov_token="[UNK]", invert=True)
         
