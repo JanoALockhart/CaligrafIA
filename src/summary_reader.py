@@ -42,11 +42,13 @@ def plot_metric(history, metric_idx):
     val_metric = history[f"val_{metric_name}"]
 
     plt.figure(figsize=(8, 5))
-    plt.plot(train_metric, label=metric_name)
-    plt.plot(val_metric, label=f"val_{metric_name}")
+    epochs = range(1, len(train_metric) + 1)
+    plt.plot(epochs, train_metric, label=metric_name)
+    plt.plot(epochs, val_metric, label=f"val_{metric_name}")
     
     plt.title(metric_name)
     plt.xlabel("Epoch")
+    plt.xticks(epochs)
     plt.ylabel(metric_name)
     plt.legend()
     plt.grid(visible=True, linestyle="--", alpha=0.6)
