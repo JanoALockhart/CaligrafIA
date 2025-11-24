@@ -91,11 +91,11 @@ class ModelManager():
         return cer, wer
     
     # TODO: Refactor plot out
-    def qualitative_matrix(self, model_path, side=4):
+    def qualitative_matrix(self, model_path, side=3):
         model = keras.models.load_model(filepath=model_path, compile=False)
         cer_metric = CharacterErrorRate(self.dataset_broker.get_decoding_function())
 
-        plt.figure(figsize=(18, 9))
+        plt.figure(figsize=(8, 3))
         for i, sample in enumerate(self.dataset_broker.get_test_set().unbatch().take(side*side)):
             x, y = sample
             x = tf.expand_dims(x, axis=0)
@@ -115,7 +115,8 @@ class ModelManager():
             plt.axis("off")
             plt.title(f"True: {true_text} \n Pred: {pred_text}\n CER: {cer*100: .2f}", fontsize=8)
 
-        plt.savefig(f"{settings.PLOTS_PATH}/cualitative_matrix.png")
+        plt.tight_layout()
+        plt.savefig(f"{settings.PLOTS_PATH}/qualitative_matrix.png")
         plt.show()
 
     def _decode_logits(self, logits):
