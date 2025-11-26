@@ -1,7 +1,7 @@
 import tensorflow as tf
 import pandas as pd
 from datasets.dataset_builder import DatasetBuilder
-
+from collections import Counter
 
 class PreprocessedDatasetBuilder(DatasetBuilder):
     def __init__(self, dataset_path, subfolder_name = "lines_png", data_augmentation = False):
@@ -16,7 +16,24 @@ class PreprocessedDatasetBuilder(DatasetBuilder):
         self.DATA_AUG_LABELS_FILE = f"{self.LABEL_FOLDER}/train_da.csv"
 
         self.vocabulary = self._build_vocabulary()
+        self.char_frequency = self._calculate_char_frequency()
         self.train_split, self.val_split, self.test_split = self._split_percentajes()
+
+    def _calculate_char_frequency(self):
+        train_df = pd.read_csv(f"{self.base_path}{self.TRAIN_LABELS_FILE}")
+        train_text = "".join(train_df["label"].astype(str))
+
+        val_df = pd.read_csv(f"{self.base_path}{self.VAL_LABELS_FILE}")
+        val_text = "".join(val_df["label"].astype(str))
+
+        test_df = pd.read_csv(f"{self.base_path}{self.TEST_LABELS_FILE}")
+        test_text = "".join(test_df["label"].astype(str))
+
+        all_text = "".join([train_text, val_text, test_text])
+        all_text = all_text.replace(" ", "")
+        freq = Counter(all_text)
+        
+        return freq
     
     def _split_percentajes(self):
         train_df = pd.read_csv(f"{self.base_path}{self.TRAIN_LABELS_FILE}")
@@ -58,6 +75,9 @@ class PreprocessedDatasetBuilder(DatasetBuilder):
     
     def get_vocabulary(self):
         return self.vocabulary
+    
+    def get_char_frequency(self):
+        return self.char_frequency
     
     def _add_base_path(self, path, label):
         base = tf.constant(self.base_path)
