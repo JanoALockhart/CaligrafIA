@@ -20,6 +20,7 @@ TEST = "test"
 DS_INFO = "ds_info"
 
 def main():
+    create_folder_structure()
     args = get_command_args()
     logger = configure_validation_logger()
     dataset_broker = configure_datasets()
@@ -102,6 +103,19 @@ def configure_validation_logger():
     
     logger = logging.getLogger()
     return logger
+
+def create_folder_structure():
+    model_path = Path("../model")
+    model_path.mkdir(exist_ok=True)
+
+    info_path = Path("../model/info")
+    info_path.mkdir(exist_ok=True)
+
+    snapshots_path = Path("../model/snapshots")
+    snapshots_path.mkdir(exist_ok=True)
+
+    plots_path = Path("../model/plots")
+    plots_path.mkdir(exist_ok=True)
 
 if __name__ == "__main__":
     main()
