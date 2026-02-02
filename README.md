@@ -20,7 +20,7 @@ pip install -r requierements.txt
 
 3. Set the percentaje of images used for the training, validation and test splits in the TRAIN_SPLIT and VAL_SPLIT variables in the .env file
 
-4. Preprocess the images of the datasets executing the command:
+4. Preprocess the images of the datasets executing the command inside /src:
     ```
     python augment.py
     ```
@@ -29,13 +29,19 @@ pip install -r requierements.txt
 5. Configure the dataset broker for training in the configure_datasets() function in main.py. There you can register which splits of each dataset are used for training, validation and testing and if dataaugmentation should be used.
 
 
-6. Execute the following command to train the model:
+6. Execute the following command inside /src to train the model:
     ```
     python main.py --mode train
     ``` 
 
 ### Outputs
-Two folders are created inside the model folder: info and snapshots.<br>
+A folder structure will be created to store the command's outputs:<br>
+```
+\model
+    \info
+    \plots
+    \snapshots
+```
 After each epoch the training and validation metrics are stored in model/info/summary.csv. A snapshot of the trained model is also saved in model/snapshots/latest.keras. Execute the command shown in 6 to continue training from that model.<br>
 During training, if a model archieves better validation character error rate (CER), a snapshot is saved inside model/snapshots with the name "valCER(m)-epoch(n).keras" where (m) is the validation CER archieved by the model and (n) is the epoch when the model archieved that result.<br>
 
@@ -47,8 +53,12 @@ python main.py --mode test --load <saved_model_file>
 ```
 where saved_model_file is the name of a saved model located inside model/snapshots.
 
+### Outputs
+Inside model/info:
+ - **dataset_info.txt**: contains information of the percentage and amount of images used in each split. In additon is shows the vocabulary (characters) used.
+ - **trainig_metrics.txt**: contains information about the total number of epochs trained and the training and validation metric from the best model saved.
 
-
+Inside model/plots the training and validation metrics, stored in model/info/summary.csv, are plot for each epoch.
 
 ## Model Architecture
 The architecture is a Recurrent Convolutional Nural Network (RCNN) taken from SimpleHTR (https://github.com/githubharald/SimpleHTR), published by [Harald Scheidl](https://github.com/githubharald), and migrated to TensorFlow 2.
