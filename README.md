@@ -34,6 +34,22 @@ pip install -r requierements.txt
     python main.py --mode train
     ``` 
 
+### Outputs
+Two folders are created inside the model folder: info and snapshots.<br>
+After each epoch the training and validation metrics are stored in model/info/summary.csv. A snapshot of the trained model is also saved in model/snapshots/latest.keras. Execute the command shown in 6 to continue training from that model.<br>
+During training, if a model archieves better validation character error rate (CER), a snapshot is saved inside model/snapshots with the name "valCER(m)-epoch(n).keras" where (m) is the validation CER archieved by the model and (n) is the epoch when the model archieved that result.<br>
+
+## Testing the model
+To test the model using the test split execute the command: 
+
+```
+python main.py --mode test --load <saved_model_file>
+```
+where saved_model_file is the name of a saved model located inside model/snapshots.
+
+
+
+
 ## Model Architecture
 The architecture is a Recurrent Convolutional Nural Network (RCNN) taken from SimpleHTR (https://github.com/githubharald/SimpleHTR), published by [Harald Scheidl](https://github.com/githubharald), and migrated to TensorFlow 2.
 
