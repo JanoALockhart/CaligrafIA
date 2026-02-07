@@ -3,8 +3,8 @@ A deep learning model made to transcribe letters from students caligraphy activi
 The model was trained using a synthetic dataset based on EMNIST and the IAM, CVL and RIMES datasets. 
 
 ![Student's calligraphy activity example](readmeImages/imprenta_mayuscula.jpeg)
-*Example of a student's calligraphy activity (written by me, not a primary school student).
-The model can transcribe one row at a time. Therefore, for an entire page, preprocessing and postprocessing is needed.*
+*Example of a fictional student's calligraphy activity (written by me, not a primary school student).
+The model can predict one row at a time. Therefore, for an entire page, preprocessing and postprocessing is needed.*
 
 ## Instructions for training
 1. Install dependencies:
@@ -59,16 +59,16 @@ where saved_model_file is the name of a saved model located inside model/snapsho
 
 ### Outputs
 Inside model/info:
- - **dataset_info.txt**: contains information of the percentage and amount of images used in each split. In additon is shows the vocabulary (characters) used.
- - **trainig_metrics.txt**: contains information about the total number of epochs trained and the training and validation metric from the best model saved.
+ - **dataset_info.txt**: contains information about the percentage and amount of images used in each split. In additon, the vocabulary (characters) used is shown.
+ - **trainig_metrics.txt**: contains information about the total number of epochs trained and the training and validation metrics from the best model saved.
 
-Inside model/plots the training and validation metrics, stored in model/info/summary.csv, are plot for each epoch.
+Inside model/plots, the training and validation metrics, stored in model/info/summary.csv, are plot for each epoch.
 
 ## Commands Summary
-`python augment.py` Preprocess the images to PNG format and apply data augmentation. <br>
+`python augment.py` Creates copies of the dataset images in PNG format and applies data augmentation. <br>
 `python main.py --mode train` Train the model<br>
 `python main.py --mode test --load <saved_model_file>` Tests the saved model with the datasets' validation splits <br>
-`python main.py --mode ds_info` Saves the datasets metrics in **dataset_info.txt** (Like the --mode test command) <br>
+`python main.py --mode ds_info` Saves the datasets metrics in **dataset_info.txt** (Like the previous command) <br>
 
 ## Model Architecture
 The architecture is a Recurrent Convolutional Nural Network (RCNN) taken from SimpleHTR (https://github.com/githubharald/SimpleHTR), published by [Harald Scheidl](https://github.com/githubharald), and migrated to TensorFlow 2.
