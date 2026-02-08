@@ -1,17 +1,9 @@
 import argparse
 from pathlib import Path
 from datasets.custom_dataset_builder import PreprocessedDatasetBuilder
-from datasets.cvl.cvl_dataloader import CVLLineDataloader
-from datasets.cvl.cvl_dataset_builder import CVLDatasetBuilder
 from datasets.dataset_broker import DatasetBrokerImpl
-from datasets.emnist.emnist_character_loader import EMNISTCharacterDataset
-from datasets.emnist.emnist_line_dataset_builder import EMNISTLineDatasetBuilder
-from datasets.iam.iam_dataset_builder import IAMDatasetBuilder
-from datasets.rimes.rimes_dataloader import RIMESWordsDataloader
-from datasets.rimes.rimes_dataset_builder import RIMESDatasetBuilder
 from model_manager import ModelManager
 import settings
-from datasets.iam.iam_dataloader import IAMLineDataloader
 import summary_reader
 
 TRAIN = "train"
