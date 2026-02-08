@@ -1,6 +1,5 @@
 import keras
 import tensorflow as tf
-import settings
 
 class CharacterErrorRate(keras.metrics.Metric):
     def __init__(self, int_to_char, name="CER", **kwargs):
@@ -27,16 +26,6 @@ class CharacterErrorRate(keras.metrics.Metric):
         errors = tf.math.reduce_sum(errors)
         length = ragged_true_batch.row_lengths() # shape = (8,)
         length = tf.math.reduce_sum(length)
-
-        if settings.DEBUG_MODE:
-            print("CER true shape: ", y_true_batch.shape)
-            print("CER pred shape: ", y_pred_batch.shape)
-            print("CER ctc decoded: ", y_pred_ctc_decoded)
-            print("CER sparse true values: ", sparse_true_batch.values)
-            print("CER sparse pred values", sparse_pred_batch.values)
-            print("CER errors", errors)
-            print("CER length", length)
-
             
         self.editdistance.assign_add(errors)
         self.total_chars.assign_add(length)
@@ -76,17 +65,6 @@ class WordErrorRate(keras.metrics.Metric):
         errors = tf.math.reduce_sum(errors)
         length = tf.RaggedTensor.from_sparse(sparse_string_true_batch).row_lengths() # shape = (8,)
         length = tf.math.reduce_sum(length)
-
-        if settings.DEBUG_MODE:
-            print("WER true shape: ", y_true_batch.shape)
-            #print("WER pred shape: ", y_pred_batch.shape)
-            #print("WER y_pred_batch[0]: ", y_pred_batch[0])
-            #print("WER logits max: ", tf.reduce_max(y_pred_batch[0], axis=1))
-            #print("WER ctc decoded: ", y_pred_ctc_decoded)
-            #print("WER true string sparse: ", sparse_string_true_batch.values)
-            #print("WER pred string sparse: ", sparse_string_pred_batch.values)
-            #print("WER errors", errors)
-            #print("WER length", length)
 
         self.editdistance.assign_add(errors)
         self.total_words.assign_add(length)

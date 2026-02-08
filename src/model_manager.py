@@ -35,9 +35,6 @@ class ModelManager():
             run_eagerly=settings.EAGER_EXECUTION
         )
 
-        if settings.DEBUG_MODE:
-            model.summary()
-
         # TRAINING
         metrics_log_callback = keras.callbacks.CSVLogger(settings.HISTORY_PATH, append=True)
         model_checkpoint_callback = keras.callbacks.ModelCheckpoint(

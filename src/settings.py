@@ -21,8 +21,6 @@ IMG_WIDTH = int(os.getenv("IMG_WIDTH"))
 
 EAGER_EXECUTION = False if not DEBUG_MODE else bool(os.getenv("EAGER_EXECUTION"))
 
-TEST_IMG_PATH = os.getenv("TEST_IMG_PATH")
-
 HISTORY_PATH = os.path.abspath(os.path.join(base_path, os.getenv("HISTORY_PATH")))
 BEST_CHECKPOINT_PATH = os.path.abspath(os.path.join(base_path, os.getenv("BEST_CHECKPOINT_PATH")))
 LAST_CHECKPOINT_PATH = os.path.abspath(os.path.join(base_path, os.getenv("LAST_CHECKPOINT_PATH")))
