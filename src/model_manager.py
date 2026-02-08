@@ -2,7 +2,6 @@ from matplotlib import pyplot as plt
 import tensorflow as tf
 from datasets.dataset_broker import DatasetBroker
 import settings
-from callbacks import ValidationLogCallback
 from metrics import CharacterErrorRate, WordErrorRate
 from model import build_model
 import keras
@@ -10,9 +9,8 @@ from pathlib import Path
 
 
 class ModelManager():
-    def __init__(self, dataset_broker:DatasetBroker, logger):
+    def __init__(self, dataset_broker:DatasetBroker):
         self.dataset_broker = dataset_broker
-        self.logger = logger
 
     def train(self):
         latest_model_path = Path(str(settings.LAST_CHECKPOINT_PATH))
@@ -41,7 +39,6 @@ class ModelManager():
             model.summary()
 
         # TRAINING
-        val_log_callback = ValidationLogCallback(self.dataset_broker.get_validation_set(), self.dataset_broker.get_decoding_function(), self.logger)
         metrics_log_callback = keras.callbacks.CSVLogger(settings.HISTORY_PATH, append=True)
         model_checkpoint_callback = keras.callbacks.ModelCheckpoint(
             filepath=settings.BEST_CHECKPOINT_PATH,
@@ -65,7 +62,6 @@ class ModelManager():
             epochs=settings.EPOCHS,
             validation_data=self.dataset_broker.get_validation_set(),
             callbacks=[
-                #val_log_callback,
                 metrics_log_callback,
                 model_checkpoint_callback,
                 latest_checkpoint_callback,

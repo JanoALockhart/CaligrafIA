@@ -1,5 +1,4 @@
 import argparse
-import logging
 from pathlib import Path
 from datasets.custom_dataset_builder import PreprocessedDatasetBuilder
 from datasets.cvl.cvl_dataloader import CVLLineDataloader
@@ -22,9 +21,8 @@ DS_INFO = "ds_info"
 def main():
     create_folder_structure()
     args = get_command_args()
-    logger = configure_validation_logger()
     dataset_broker = configure_datasets()
-    model_manager = ModelManager(dataset_broker, logger)
+    model_manager = ModelManager(dataset_broker)
 
     if args.mode == TRAIN:
         model_manager.train()
@@ -87,22 +85,6 @@ def configure_datasets():
     
     dataset_broker.sample_datasets()
     return dataset_broker
-
-def configure_validation_logger():
-    log_path = Path(str(settings.VALIDATION_LOG_PATH))
-
-    if not log_path.exists():
-        log_path.touch()
-
-    logging.basicConfig(
-        level=logging.INFO,
-        filename=settings.VALIDATION_LOG_PATH,
-        format="%(asctime)s %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-    
-    logger = logging.getLogger()
-    return logger
 
 def create_folder_structure():
     model_path = Path("../model")
