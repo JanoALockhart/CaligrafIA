@@ -56,8 +56,7 @@ def configure_datasets():
     dataset_broker = DatasetBrokerImpl(
         img_height=settings.IMG_HEIGHT,
         img_width=settings.IMG_WIDTH,
-        batch_size=settings.BATCH_SIZE,
-        data_augmentation=False # Keep false with the preprocessed datasets
+        batch_size=settings.BATCH_SIZE
     )
 
     emnist_builder = PreprocessedDatasetBuilder(settings.EMNIST_PATH, data_augmentation=True)

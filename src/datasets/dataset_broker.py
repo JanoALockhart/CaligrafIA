@@ -3,7 +3,6 @@ from io import StringIO
 
 import tensorflow as tf
 from keras import layers
-from tf_data_augmentation import apply_augmentations
 from datasets.dataset_builder import DatasetBuilder
 import settings
 
@@ -42,11 +41,10 @@ class DatasetBroker(ABC):
         pass
 
 class DatasetBrokerImpl(DatasetBroker):
-    def __init__(self, img_height, img_width, batch_size, data_augmentation = True):
+    def __init__(self, img_height, img_width, batch_size):
         self.img_height = img_height
         self.img_width = img_width
         self.batch_size = batch_size
-        self.data_augmentation = data_augmentation
         self.train_dataset_builders:list[DatasetBuilder] = []
         self.val_test_dataset_builders:list[DatasetBuilder] = []
 
@@ -98,18 +96,9 @@ class DatasetBrokerImpl(DatasetBroker):
         label = self.encoding_function(label)
 
         return img, label
-    
-    def _tf_augment(self, image, label):
-        img_shape = image.shape
-        image = apply_augmentations(image)
-        image.set_shape(img_shape)
-
-        return image, label
 
     def get_training_set(self):
         train_dataset = self.train_ds.map(self._preprocess_sample)
-        if self.data_augmentation:
-            train_dataset = train_dataset.map(self._tf_augment)
         train_dataset = train_dataset.padded_batch(self.batch_size, drop_remainder=True)
     
         return train_dataset
