@@ -12,7 +12,7 @@ class CharacterErrorRate(keras.metrics.Metric):
         ragged_true_batch = tf.RaggedTensor.from_tensor(y_true_batch, padding=0)
         sparse_true_batch = ragged_true_batch.to_sparse()
         sparse_true_batch = self.int_to_char(sparse_true_batch)
-        # TODO: Learn why ctc_decode only decodes the first batch and not the following as well
+        
         timesteps = tf.shape(y_pred_batch)[1]
         batch_size = tf.shape(y_pred_batch)[0]
         y_pred_len = timesteps * tf.ones(batch_size, dtype="int32")
@@ -37,7 +37,6 @@ class CharacterErrorRate(keras.metrics.Metric):
         self.editdistance.assign(0.0)
         self.total_chars.assign(0.0)
 
-# TODO: Implement WER and Phrase Acc
 class WordErrorRate(keras.metrics.Metric):
     def __init__(self, int_to_char, name="WER", **kwargs):
         super().__init__(name=name, **kwargs)

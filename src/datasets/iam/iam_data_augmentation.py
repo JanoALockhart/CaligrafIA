@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from data_augmentation import DatasetAugmentator
 
-# TODO: test
 class IAMDatasetAugmentator(DatasetAugmentator):
     def __init__(self, dataset_path, subfolder_name, train_split, val_split, dataloader, img_shape = (512, 32)):
         super().__init__(dataset_path, subfolder_name, train_split, val_split)
