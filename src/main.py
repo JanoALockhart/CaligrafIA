@@ -1,6 +1,6 @@
 import argparse
 from pathlib import Path
-from datasets.custom_dataset_builder import PreprocessedDatasetBuilder
+from datasets.preprocessed_dataset_builder import PreprocessedDatasetBuilder
 from datasets.dataset_broker import DatasetBrokerImpl
 from model_manager import ModelManager
 import settings
