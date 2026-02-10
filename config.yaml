@@ -1,0 +1,31 @@
+preprocessFolder: "/home/jano/Documents/FinalProject/Datasets/Preprocessed"
+datasets:
+  - name: "IAM"
+    path: "/home/jano/Documents/FinalProject/Datasets/IAM"
+    splits:
+      train: 1.0
+      validation: 0.0
+      test: 0.0
+
+  - name: "CVL"
+    path: "/home/jano/Documents/FinalProject/Datasets/CVL"
+    splits:
+      train: 1.0
+      validation: 0.0
+      test: 0.0
+
+  - name: "RIMES"
+    path: "/home/jano/Documents/FinalProject/Datasets/RIMES"
+    splits:
+      train: 1.0
+      validation: 0.0
+      test: 0.0
+
+  - name: "EMNIST"
+    path: "/home/jano/Documents/FinalProject/Datasets/EMNIST"
+    splits:
+      train: 1.0
+      validation: 0.0
+      test: 0.0
+  
+  
